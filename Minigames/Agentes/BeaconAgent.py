@@ -5,15 +5,40 @@ import random
 from absl import app
 
 class BeaconAgent(base_agent.BaseAgent):
+  #esta funci[on verifica que el eprsonaje este seleccionado]
+  def unit_type_is_selected(self, obs, unit_type):
+        if (len(obs.observation.single_select) > 0 and obs.observation.single_select[0].unit_type == unit_type):
+            return True
+
+        if (len(obs.observation.multi_select) > 0 and obs.observation.multi_select[0].unit_type == unit_type):
+            return True
+
+        return False
+  
+  def __init__(self):
+    super(BeaconAgent, self).__init__()
+    self.x = random.randint(4, 79)#variable x para establecer el punto a llegar
+    self.y = random.randint(4,58) #variable y para establecer el punto a llegar
+    self.bandera = 0 #esta variable nos sirve para que no este dando clicks todo el tiempo solo hasta que se alcanza el objetivo
+
+
   def step(self, obs):
     super(BeaconAgent, self).step(obs)
-    #soldados = [unit for unit in obs.observation.feature_units]
-    
-    
     soldado = obs.observation.feature_units[0]
-    if len(soldado!=None) :  
-        return actions.FUNCTIONS.select_point("select_all_type", (soldado.x,soldado.y))
-
+    if (self.unit_type_is_selected(obs, units.Terran.Marine)): #si el Marine esta seleccionado mueve al personaje
+      if(soldado.x!=self.x and soldado.y!=self.y and self.bandera == 0 ):
+        print("Ejecutando movimiento")
+        self.bandera = 1 #significa que se esta moviendo al objetivo no necesita cambiar la direcci[on]
+        return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
+      #si alcanzo el objetivo cambia de direccion
+      elif ((soldado.x>=self.x-2 and soldado.x<=self.x+2 ) and (soldado.y>=self.y-2 and soldado.y<=self.y+2 ) and self.bandera ==1 ):
+        self.x = random.randint(4, 79)
+        self.y = random.randint(4,58)
+        self.bandera = 0 
+    else:
+      if len(soldado!=None) :  
+          return actions.FUNCTIONS.select_point("select_all_type", (soldado.x,soldado.y))
+    
     return actions.FUNCTIONS.no_op()
 
 def main(unused_argv):
