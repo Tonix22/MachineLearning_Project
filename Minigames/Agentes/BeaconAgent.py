@@ -4,6 +4,7 @@ from pysc2.lib import actions, features, units
 import random
 from absl import app
 import numpy
+import IDS
 
 _PLAYER_SELF = features.PlayerRelative.SELF
 _PLAYER_NEUTRAL = features.PlayerRelative.NEUTRAL
@@ -34,19 +35,20 @@ class BeaconAgent(base_agent.BaseAgent):
   def step(self, obs):
     super(BeaconAgent, self).step(obs)
     soldado = obs.observation.feature_units[0]
-    self.beaconCapture(obs)
-    self.x=self.beacon_center[0]
-    self.y=self.beacon_center[1]
+    #self.x=self.beacon_center[0]
+    #self.y=self.beacon_center[1]
     if actions.FUNCTIONS.Move_screen.id in obs.observation.available_actions: #si el Marine esta seleccionado mueve al personaje
       if(soldado.x!=self.x and soldado.y!=self.y and self.bandera == 0 ):
-        print("Ejecutando movimiento")
+        print("Calcula ruta")
         self.bandera = 1 #significa que se esta moviendo al objetivo no necesita cambiar la direcci[on]
+        self.beaconCapture(obs)
+        self.x, self.y = IDS.IDS_BeaconSearchCenterScreen(self.beacon_center)
+        print("Ejecutando movimiento")
         return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
       #si alcanzo el objetivo cambia de direccion
       elif ((soldado.x>=self.x-2 and soldado.x<=self.x+2 ) and (soldado.y>=self.y-2 and soldado.y<=self.y+2 ) and self.bandera ==1 ):
-        #self.x = random.randint(4, 79)
-        #self.y = random.randint(4,58)
-        self.bandera = 0 
+        print("Llegue, cambiame la ruta")
+        self.bandera = 0
     else:
       return actions.FUNCTIONS.select_army("select")
     
