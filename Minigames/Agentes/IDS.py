@@ -129,23 +129,24 @@ def IDS(node,goal):
         depth+=stepsize
 
 #----------------------------------------------------------------------------
-halfSizeBeacon=3 #6
-stepSize=6 #8
+halfSizeBeacon=1 #6
+stepSize=2 #8
 gap=4 #4
-cols=13 #10
-rows=10 #7
+cols=math.ceil((84-gap*2)/stepSize) #10
+rows=math.ceil((64-gap*2)/stepSize) #7
 lastpos=(-1,-1)
 lastSentCoord=(-1,-1)
 
 def IDS_BeaconSearchCenterScreen(beaconPos):
     global lastpos,lastSentCoord
-    print(beaconPos)
-    if(lastpos[0]!=beaconPos[0] and lastpos[1]!=beaconPos[1]):
+    if(lastpos[0]!=beaconPos[0] or lastpos[1]!=beaconPos[1]):
+        print('Received new beacon pos: '+str(beaconPos))
         lastpos=beaconPos
         middle=( math.floor((cols)/2) , math.floor((rows-1)/2) )
         lastSentCoord=IDS_BeaconSearch(middle,beaconPos)
         return lastSentCoord
     else:
+        print('Repeated beacon pos')
         return lastSentCoord
 
 def IDS_BeaconSearch(center, beaconPos):
@@ -153,6 +154,8 @@ def IDS_BeaconSearch(center, beaconPos):
     global mArrayParent 
     mArrayParent = calculateMapArrayParent(initializeMapArray(rows,cols),center)
     #printMapArray(mArrayParent)
+    
+    #IDS, calculos
     result=IDS(center,beaconPos)
     resultCoords=posToCoord(result,stepSize,gap)
     print("go to: "+str(resultCoords))
