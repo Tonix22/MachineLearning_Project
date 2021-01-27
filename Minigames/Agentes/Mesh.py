@@ -21,23 +21,23 @@ class Node:
 
 class Mesh:
     def __init__ (self,row,col):
-        self.col    = col
-        self.row    = row
+        self.col_size    = col
+        self.row_size    = row
         self.Grid=[[Node()for i in range(col)] for j in range(row)]# actual representation of grid
         self.fill()
 
     def fill(self):
-        col_limit = self.col-1
-        row_limit = self.row-1
-        for row in range(0,self.row):
-            for col in range(0,self.col):
+        col_limit = self.col_size-1
+        row_limit = self.row_size-1
+        for row in range(0,self.row_size):
+            for col in range(0,self.col_size):
 
                 prev_row = row-1
                 next_row = row+1
                 prev_col = col-1
                 next_col = col+1
                 
-                self.Grid[row][col].cord = (row*(64//self.row)+(64//self.row),col*(84//self.col)+(84//self.col))
+                self.Grid[row][col].cord = (row*(64//self.row_size)+(64//self.row_size),col*(84//self.col_size)+(84//self.col_size))
                 
                 if (row  > 0):                                 #UP
                     self.Grid[row][col].Neighbors['UP']         = self.Grid[prev_row][col]
