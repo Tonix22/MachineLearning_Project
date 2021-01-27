@@ -8,9 +8,9 @@ def degreesTwoPoints(a,b):
     #print(str(a)+','+str(b)+':'+str(degrees))
     return degrees
 
-def posToCoord(t,stepSize,gap):
+def posToCoord(t,stepSize,offset):
     if(t!=('','')):
-        return (t[0]*stepSize+gap,t[1]*stepSize+gap)
+        return (t[0]*stepSize+offset,t[1]*stepSize+offset)
     return ('','')  
 
 def printMapArray(arr):
@@ -23,7 +23,8 @@ def printMapArray(arr):
             else:
                 print('( , )', end=' ')
         print('')
-
+        
+#Create a 2D array and FILL with (X,Y) value 
 def initializeMapArray(rows,cols):
     MapArray=[[(-1,-1) for i in range(cols)] for j in range(rows)]   
     for i in range(rows):
@@ -49,19 +50,19 @@ def calculateMapArrayParent(arr,center):
                 MapArrayParent[i][j] = (j+x,i+y)  #j+i
     return MapArrayParent
 
-def fromMapArrayToMapCoords(arr,stepSize,gap):
+def fromMapArrayToMapCoords(arr,stepSize,offset):
     cols=len(arr[0])
     rows=len(arr)
     CoordArray=[[('','') for i in range(cols)] for j in range(rows)]
     for i in range(rows):
         for j in range(cols):
-            CoordArray[i][j]=posToCoord(arr[i][j],stepSize,gap)
+            CoordArray[i][j]=posToCoord(arr[i][j],stepSize,offset)
     return CoordArray
 
 def test():
     #Posibles arrays que se pueden crear con las funciones creadas
     stepSize=8
-    gap=4
+    offset=4
     cols=10
     rows=7
     middle=( math.floor((cols)/2) , math.floor((rows-1)/2) )
@@ -69,13 +70,13 @@ def test():
     mArray = initializeMapArray(rows,cols)
     printMapArray(mArray)
     print('======Array con coordenadas =====')
-    mCoords = fromMapArrayToMapCoords(mArray,stepSize,gap)
+    mCoords = fromMapArrayToMapCoords(mArray,stepSize,offset)
     printMapArray(mCoords)
     print('======Array apuntando a su padre=====')
     mArrayParent = calculateMapArrayParent(mArray,middle)
     printMapArray(mArrayParent)
     print('======Array con coordenadas a su padre=====')
-    mCoordsParent =fromMapArrayToMapCoords(mArrayParent,stepSize,gap)
+    mCoordsParent =fromMapArrayToMapCoords(mArrayParent,stepSize,offset)
     printMapArray(mCoordsParent)
 
 #Find Beacon with IDS-----------------------------------------------
@@ -84,7 +85,7 @@ def isGoal(node,goal):
     if node!=None:
         #node: node in pos
         #goal: center of beacon in coords
-        n = posToCoord(node,stepSize,gap)
+        n = posToCoord(node,stepSize,offset)
         if(n[0]<=goal[0]+halfSizeBeacon and n[0]>=goal[0]-halfSizeBeacon and n[1]<=goal[1]+halfSizeBeacon and n[1]>=goal[1]-halfSizeBeacon ):
             return True
     return False
@@ -104,36 +105,37 @@ def expand(node):
                     children.append((nx+j,ny+i))
     return children
 
-def DLS(node,goal,depth):
+def DLS(node,goal,depth): # Depth-limited Search
     if (depth>=0):
         if(isGoal(node,goal)):
             print('Found goal in node:'+str(node)+', and depth: '+str(depth))
             return True, node
         children=expand(node)
         #print (str(node)+',children:'+str(children))
-        for child in children: 
+        for child in children: #max 8 children at first look, and then max 3
             #print(str(child)+',depth:'+str(depth))
             reached, result = DLS(child,goal,depth+1)
             if(reached):
                 return True, result
         return False, None
 
-def IDS(node,goal):
+def IDS(node,goal): #iterative deeping serach
     depth=0
     stepsize=1
     reached=False
     while not reached:
-        reached, result = DLS(node,goal,depth)
+        reached, result = DLS(node,goal,depth) # Depth-limited Search
         if isGoal(result,goal):
             return result
         depth+=stepsize
 
 #----------------------------------------------------------------------------
-halfSizeBeacon=1 #6
-stepSize=2 #8
-gap=4 #4
-cols=math.ceil((84-gap*2)/stepSize) #10
-rows=math.ceil((64-gap*2)/stepSize) #7
+halfSizeBeacon=1 #6 estado mas centro , +-3, tamano 6
+stepSize=2 #8 que tanto se mueve paso a paso
+offset=4 #4 condicion incial, offset
+#genera macrobloques
+cols=math.ceil((84-offset*2)/stepSize) #10
+rows=math.ceil((64-offset*2)/stepSize) #7
 lastpos=(-1,-1)
 lastSentCoord=(-1,-1)
 
@@ -157,7 +159,7 @@ def IDS_BeaconSearch(center, beaconPos):
     
     #IDS, calculos
     result=IDS(center,beaconPos)
-    resultCoords=posToCoord(result,stepSize,gap)
+    resultCoords=posToCoord(result,stepSize,offset)
     print("go to: "+str(resultCoords))
     return resultCoords
 
