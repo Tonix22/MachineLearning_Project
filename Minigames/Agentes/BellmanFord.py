@@ -14,12 +14,16 @@ class SetQueue(Queue):
             return item in self.queue
 
 class BellmanImplicit(Mesh):
-    def __init__(self,row,col,source,offset):
+    def __init__(self,source,beacon):
         #put(item) – Put an item into the queue
         #get() – Remove and return an item from the queue. 
         self.Open   = SetQueue()
         self.Closed = []
-        Mesh.__init__(self,row,col,source,offset)
+        #create here your mesh data
+        self.row    = 3
+        self.col    = 3
+        Mesh.__init__(self,self.row,self.col)
+
 
     def AppendNeightbors(self,s):
         for N in s.Neighbors:
@@ -85,7 +89,7 @@ class BellmanImplicit(Mesh):
 
 
 def main():
-    var = Mesh(3,4,1,1)
+    var = Mesh(3,4)
 
 if __name__ == "__main__":
     main()

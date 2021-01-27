@@ -20,11 +20,9 @@ class Node:
 
 
 class Mesh:
-    def __init__ (self,row,col,source,offset):
+    def __init__ (self,row,col):
         self.col    = col
         self.row    = row
-        self.offset = offset
-        self.source = source
         self.Grid=[[Node()for i in range(col)] for j in range(row)]# actual representation of grid
         self.fill()
 
