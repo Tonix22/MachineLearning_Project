@@ -56,4 +56,4 @@ class Mesh:
                 if (col >= 1):                                 #LEFT
                     self.Grid[row][col].Neighbors['LEFT']       = self.Grid[row]     [prev_col]
                 if (next_row < row_limit and col >= 1):        #UP LEFT
-                    self.Grid[row][col].Neighbors['UP_LEFT']    = se
+                    self.Grid[row][col].Neighbors['UP_LEFT']    = self.Grid[prev_row][prev_col]
