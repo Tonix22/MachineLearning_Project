@@ -37,7 +37,8 @@ class Mesh:
                 prev_col = col-1
                 next_col = col+1
                 
-                self.Grid[row][col].cord = (row*(64//self.row_size)+(64//self.row_size),col*(84//self.col_size)+(84//self.col_size))
+                self.Grid[row][col].cord = (((64//(self.col_size*2))*((col+1)*2-1)),\
+                                            ((84//(self.row_size*2)*((row+1)*2-1))))
                 
                 if (row  > 0):                                 #UP
                     self.Grid[row][col].Neighbors['UP']         = self.Grid[prev_row][col]

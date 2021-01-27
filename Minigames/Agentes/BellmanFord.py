@@ -89,7 +89,7 @@ class BellmanImplicit(Mesh):
 
 
 def main():
-    var = Mesh(3,4)
+    var = Mesh(2,2)
 
 if __name__ == "__main__":
     main()
