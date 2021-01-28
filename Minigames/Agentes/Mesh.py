@@ -1,7 +1,7 @@
 from Params import *
 class Node:
     def __init__(self):
-        self.value = (1<<31)-1 ## max int of 32 bits
+        self.value = 1000 ## max int of 32 bits
         #Neighbors number conter clockwise
         #posiciones  0=U  1=UR 2=R  3=DR 4=D  5=DL 6=L  7=UL
         self.cord = (0,0)
@@ -35,7 +35,19 @@ class Mesh:
                     and y >= (elem.cord[1]-block_size)):
                         return elem
 
-
+    def Get_relative_cord(self,x,y):
+        block_size = (X_MAP_SIZE// self.col_size)//2
+        i=0
+        for row in self.Grid:
+            j=0
+            for elem in row:
+                if( x < (elem.cord[0]+block_size)
+                and x >= (elem.cord[0]-block_size)):
+                    if( y < (elem.cord[1]+block_size)
+                    and y >= (elem.cord[1]-block_size)):
+                        return i,j
+                j+=1
+            i+=1
 
     def fill(self):
         col_limit = self.col_size-1
@@ -59,15 +71,22 @@ class Mesh:
                     self.Grid[row][col].Neighbors['RIGHT']      = self.Grid[row]     [next_col]
                 if (row < row_limit and col < (col_limit)):    #RIGHT DOWN
                     self.Grid[row][col].Neighbors['RIGHT_DOWN'] = self.Grid[next_row][next_col]
-                if (next_row  < row_limit):                    #DOWN
+                if (row  < row_limit):                    #DOWN
                     self.Grid[row][col].Neighbors['DOWN']       = self.Grid[next_row][col]
-                if (next_row < row_limit and col >= 1):        #DOWN LEFT
+                if (row < row_limit and col >= 1):        #DOWN LEFT
                     self.Grid[row][col].Neighbors['DOWN_LEFT']  = self.Grid[next_row][prev_col]
                 if (col >= 1):                                 #LEFT
                     self.Grid[row][col].Neighbors['LEFT']       = self.Grid[row]     [prev_col]
-                if (next_row < row_limit and col >= 1):        #UP LEFT
+                if (row  > 0 and col >= 1):        #UP LEFT
                     self.Grid[row][col].Neighbors['UP_LEFT']    = self.Grid[prev_row][prev_col]
 
+    def print_mesh(self):
+        for row in range(0,self.row_size):
+            for col in range(0,self.col_size):
+                print(self.Grid[row][col].cord,end="")
+                print("{"+str(self.Grid[row][col].value)+"}",end="")
+            print(" ")
+        print("****************************")
 def main():
     var = Mesh(2,2)
     var.Place_character(10,70)

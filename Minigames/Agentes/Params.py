@@ -3,5 +3,9 @@ X_MAP_SIZE = 84
 Y_MAP_SIZE = 64
 
 #MACROBLOCKS
-ROW    = 3
-COL    = 3
+ROW    = 16
+COL    = 14
+
+#ALGORITHM
+run_IDS  = False
+run_BELL = True
