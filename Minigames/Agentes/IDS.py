@@ -1,4 +1,17 @@
 import math 
+import Params
+
+halfSizeBeacon=1    # estado mas centro , +-3, tamano 6
+stepSize=2          # que tanto se mueve paso a paso
+offset=4            # condicion incial, offset
+#genera macrobloques
+cols=math.ceil((Params.X_MAP_SIZE-offset*2)/stepSize) 
+rows=math.ceil((Params.Y_MAP_SIZE-offset*2)/stepSize)
+
+lastpos=(-1,-1)
+lastSentCoord=(-1,-1)
+nodesExpanded = 0
+nodesExplored = 0
 
 def degreesTwoPoints(a,b):
     x = (b[0]-a[0])
@@ -103,10 +116,14 @@ def expand(node):
             if(ny+i<rows and nx+j<cols): 
                 if(mArrayParent[ny+i][nx+j]==node):
                     children.append((nx+j,ny+i))
+    global nodesExpanded
+    nodesExpanded+=len(children)
     return children
 
 def DLS(node,goal,depth): # Depth-limited Search
     if (depth>=0):
+        global nodesExplored
+        nodesExplored+=1
         if(isGoal(node,goal)):
             print('Found goal in node:'+str(node)+', and depth: '+str(depth))
             return True, node
@@ -130,38 +147,33 @@ def IDS(node,goal): #iterative deeping serach
         depth+=stepsize
 
 #----------------------------------------------------------------------------
-halfSizeBeacon=1 #6 estado mas centro , +-3, tamano 6
-stepSize=2 #8 que tanto se mueve paso a paso
-offset=4 #4 condicion incial, offset
-#genera macrobloques
-cols=math.ceil((84-offset*2)/stepSize) #10
-rows=math.ceil((64-offset*2)/stepSize) #7
-lastpos=(-1,-1)
-lastSentCoord=(-1,-1)
-
 def IDS_BeaconSearchCenterScreen(beaconPos):
+    middle=( math.floor((cols)/2) , math.floor((rows-1)/2) )
+    return IDS_BeaconSearch(middle,beaconPos)
+
+def IDS_BeaconSearch(center, beaconPos):
     global lastpos,lastSentCoord
+    #Revisa que no la posicion del beacon haya cambiado a la ultima recibida
     if(lastpos[0]!=beaconPos[0] or lastpos[1]!=beaconPos[1]):
         print('Received new beacon pos: '+str(beaconPos))
         lastpos=beaconPos
-        middle=( math.floor((cols)/2) , math.floor((rows-1)/2) )
-        lastSentCoord=IDS_BeaconSearch(middle,beaconPos)
+        ##Datos informativos
+        global nodesExpanded, nodesExplored
+        nodesExpanded=1 #1 counting the source
+        nodesExplored=1 #1 counting the source 
+        ##Genera la matriz de que posicion es padre de cual
+        global mArrayParent 
+        mArrayParent = calculateMapArrayParent(initializeMapArray(rows,cols),center)
+        printMapArray(mArrayParent)
+        ##IDS, calculos
+        result=IDS(center,beaconPos)
+        lastSentCoord=posToCoord(result,stepSize,offset)
+        print("Go to: "+str(lastSentCoord))
+        print("Expanded nodes: "+str(nodesExpanded)+"; Explored nodes: "+str(nodesExplored))
         return lastSentCoord
     else:
         print('Repeated beacon pos')
         return lastSentCoord
-
-def IDS_BeaconSearch(center, beaconPos):
-    #Datos necesarios para algunos calculos
-    global mArrayParent 
-    mArrayParent = calculateMapArrayParent(initializeMapArray(rows,cols),center)
-    #printMapArray(mArrayParent)
-    
-    #IDS, calculos
-    result=IDS(center,beaconPos)
-    resultCoords=posToCoord(result,stepSize,offset)
-    print("go to: "+str(resultCoords))
-    return resultCoords
 
 if __name__ == "__main__":
     #test()
