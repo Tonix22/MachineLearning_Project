@@ -61,7 +61,7 @@ class BeaconAgent(base_agent.BaseAgent):
           return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
       
       #si alcanzo el objetivo cambia de direccion
-      elif ((soldado.x>=self.x-2 and soldado.x<=self.x+2 ) and (soldado.y>=self.y-2 and soldado.y<=self.y+2 ) and self.bandera ==1 ):
+      elif ((soldado.x>=self.x-4 and soldado.x<=self.x+4 ) and (soldado.y>=self.y-4 and soldado.y<=self.y+4 ) and self.bandera ==1 ):
         print("Llegue, cambiame la ruta")
         self.bandera = 0
     else:
