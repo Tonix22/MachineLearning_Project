@@ -5,9 +5,12 @@ import random
 from absl import app
 import numpy
 import IDS
+from BellmanFord import *
 
-_PLAYER_SELF = features.PlayerRelative.SELF
+_PLAYER_SELF    = features.PlayerRelative.SELF
 _PLAYER_NEUTRAL = features.PlayerRelative.NEUTRAL
+
+
 
 def _xy_locs(mask):
   """Mask should be a set of bools from comparison with a feature layer."""
@@ -26,6 +29,7 @@ class BeaconAgent(base_agent.BaseAgent):
     self.y = 0 #variable y para establecer el punto a llegar
     self.bandera = 0 #esta variable nos sirve para que no este dando clicks todo el tiempo solo hasta que se alcanza el objetivo
     self.beacon_center = (0,0)
+    self.Bell = BellmanImplicit() #build bell man map
 
   def beaconCapture(self,obs):
     player_relative = obs.observation.feature_screen.player_relative
@@ -42,7 +46,10 @@ class BeaconAgent(base_agent.BaseAgent):
         print("Calcula ruta")
         self.bandera = 1 #significa que se esta moviendo al objetivo no necesita cambiar la direcci[on]
         self.beaconCapture(obs)
-        self.x, self.y = IDS.IDS_BeaconSearchCenterScreen(self.beacon_center)
+        x_cor = soldado.x
+        y_cor = soldado.y
+        self.Bell.ImplicitBellmanFord(soldado)
+        #self.x, self.y = IDS.IDS_BeaconSearchCenterScreen(self.beacon_center)
         print("Ejecutando movimiento")
         return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
       #si alcanzo el objetivo cambia de direccion

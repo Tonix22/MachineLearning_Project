@@ -1,9 +1,11 @@
 #aqui hacemos Bellman :)
+from Params import *
 from Mesh import Mesh
 from queue import Queue
 
+
 class SetQueue(Queue):
-    def _init(self):
+    def _init(self, maxsize):
         self.queue = set()
     def _put(self, item):
         self.queue.add(item)
@@ -14,38 +16,38 @@ class SetQueue(Queue):
             return item in self.queue
 
 class BellmanImplicit(Mesh):
-    def __init__(self,source,beacon):
+    def __init__(self):
         #put(item) – Put an item into the queue
         #get() – Remove and return an item from the queue. 
-        self.Open   = SetQueue()
+        self.Open   = SetQueue(ROW*COL)
         self.Closed = []
         #create here your mesh data
-        self.row    = 3
-        self.col    = 3
+        self.row    = ROW
+        self.col    = COL
         Mesh.__init__(self,self.row,self.col)
 
-
     def AppendNeightbors(self,s):
-        for N in s.Neighbors:
-            if N is not None:
+        for N in s.Neighbors.values():
+            if N != None:
                 self.Open.put(N)
 
     def ExpandNode(self,u):
         succ = []
-        for N in u.Neighbors:
-            if N is not None:
+        for N in u.Neighbors.values():
+            if N != None:
                 succ.append(N)
             return succ
     #Input: Start node s, function w, function expand, function goal
     #Output: cheapest path from s to t in T, stored in f(s)
 
-    def ImplicitBellmanFord(self,s):
-
+    def ImplicitBellmanFord(self,soldier):
+        #get the x,y cordenate in Macrobloc format 
+        source = self.Place_character(soldier.x,soldier.y)
         self.Open.queue.clear()
         del self.Closed[:] # clear Closed
-        self.AppendNeightbors(s)
+        self.AppendNeightbors(source)
 
-        s.value = 0 #f(s) is the Node.value, h(s) is the height, and it is 0
+        source.value = 0 #f(s) is the Node.value, h(s) is the height, and it is 0
         while(not self.Open.empty()): #while Open is not empty
             u = self.Open.get()   #pop first element from Open
             self.Closed.append(u)  #pass from Open queue to close list
@@ -62,7 +64,7 @@ class BellmanImplicit(Mesh):
                 if ( len(v.path) >= n-1 ):
                     return
                 v.parent = u 
-                v.value = u.value + self.weight(u,v) #Update f(v) = f(u)+w(u,v) 
+                v.value  = u.value + self.weight(u,v) #Update f(v) = f(u)+w(u,v) 
         
         elif (v in self.Closed):
             if( self.NeedToRelax(u,v) ):
@@ -89,7 +91,8 @@ class BellmanImplicit(Mesh):
 
 
 def main():
-    var = Mesh(2,2)
+    #var = Mesh(2,2)
+    var = BellmanImplicit()
 
 if __name__ == "__main__":
     main()

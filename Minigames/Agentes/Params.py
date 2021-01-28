@@ -1,0 +1,7 @@
+#MAPSIZE 
+X_MAP_SIZE = 84
+Y_MAP_SIZE = 64
+
+#MACROBLOCKS
+ROW    = 3
+COL    = 3
