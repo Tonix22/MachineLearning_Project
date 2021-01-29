@@ -75,7 +75,7 @@ class BellmanImplicit(Mesh):
     #Input: Nodes u and v, number of problem graph node n
     #Side Effetcs Update parent of v, f(v), Open and Closed
     def Improve(self,u,v):
-        n=ROW #TODO figure out what is n
+        n=max(ROW,COL) #TODO figure out what is n
         if (v in self.Open):
             if ( self.NeedToRelax(u,v) ): #Relaxation
                 if (self.Path_lenght(v) >= n-1 ): #Lenght to v to source
@@ -110,7 +110,7 @@ class BellmanImplicit(Mesh):
     def Path_lenght(self,v):
         predecesor = v.parent
         lenght     = 0
-        while(predecesor!=None and lenght>(ROW*COL)):
+        while(predecesor!=None and lenght>max(ROW,COL)):
             predecesor=predecesor.parent
             lenght+=1
         return lenght
