@@ -27,15 +27,28 @@ class Mesh:
         self.fill()
     def Place_character(self,x,y):
         block_sizex = (X_MAP_SIZE// self.col_size)//2
+        rotation_try = [(0,5),(5,0),(0,-5),(-5,0)]
         #block_sizey = (Y_MAP_SIZE// self.col_size)//2
-        for row in self.Grid:
-            for elem in row:
-                if( x < (elem.cord[0]+block_sizex)
-                and x >= (elem.cord[0]-block_sizex)):
-                    if( y < (elem.cord[1]+block_sizex)
-                    and y >= (elem.cord[1]-block_sizex)):
-                        #elem.cord=(x,y)
-                        return elem
+        grid = None
+        counter = 0
+        expand  = 1
+        while(grid == None):
+            for row in self.Grid:
+                for elem in row:
+                    if( x < (elem.cord[0]+block_sizex)
+                    and x >= (elem.cord[0]-block_sizex)):
+                        if( y < (elem.cord[1]+block_sizex)
+                        and y >= (elem.cord[1]-block_sizex)):
+                            #elem.cord=(x,y)
+                            grid = elem
+                            return grid
+            
+            x+=(rotation_try[counter][0]*expand)
+            y+=(rotation_try[counter][1]*expand)
+            counter+=1
+            counter = counter %4
+            if(counter == 0):
+                expand+=1
 
     def Get_relative_cord(self,x,y):
         block_size = (X_MAP_SIZE// self.col_size)//2
