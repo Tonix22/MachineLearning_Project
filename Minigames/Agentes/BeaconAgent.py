@@ -32,48 +32,64 @@ class BeaconAgent(base_agent.BaseAgent):
     self.estado = 0 #0=Idle 1=Calcular Ruta 2=Movimiento
     self.beacon_center = (0,0)
     self.Bell = BellmanImplicit() #build bell man map
+    self.soldado = (0,0)
     self.way = []
 
   def beaconCapture(self,obs):
     player_relative = obs.observation.feature_screen.player_relative
     beacon = _xy_locs(player_relative == _PLAYER_NEUTRAL)
     self.beacon_center = numpy.mean(beacon, axis=0).round()
+  
+  def marineCapture(self,obs):
+    player_relative = obs.observation.feature_screen.player_relative
+    marine = _xy_locs(player_relative == _PLAYER_SELF)
+    if (len(marine)!=0):
+      temp = numpy.mean(marine, axis=0).round()
+      self.soldado = (int(temp[0]),int(temp[1]))
 
   def step(self, obs):
     super(BeaconAgent, self).step(obs)
     #time.sleep(0.1)
-    soldado = obs.observation.feature_units[0]
+    
+    #soldado = obs.observation.feature_units[0]
+    #soldado = [unit for unit in obs.observation.feature_units if unit.unit_type == units.Terran.Marine]
+    
     #self.x=self.beacon_center[0]
     #self.y=self.beacon_center[1]
     if actions.FUNCTIONS.Move_screen.id in obs.observation.available_actions: #si el Marine esta seleccionado mueve al personaje
+      self.marineCapture(obs)  
       if(self.estado == 0 ):
+        
         print("Calcula ruta")
         self.estado = 1 
         self.beaconCapture(obs)
 
         if(run_BELL):
           if(len(self.way) == 0 ):
-            self.way = self.Bell.ImplicitBellmanFord(soldado,self.beacon_center)
+            self.way = self.Bell.ImplicitBellmanFord(self.soldado,self.beacon_center)
+            self.x, self.y = self.way.pop()
+            return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
 
         if(run_IDS):
           self.x, self.y = IDS.IDS_BeaconSearchCenterScreen(self.beacon_center)
           
-        time.sleep(2)
 
       elif (self.estado==1):
         print("Ejecutando movimiento")
         if(run_BELL):
-          self.x, self.y = self.way.pop()
-          if(len(self.way) == 0 ): #hasta que llegue al ultimo del way
-              self.estado = 2
-          return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
+          if ((self.soldado[0]>=self.x-1 and self.soldado[0]<=self.x+1 ) and (self.soldado[1]>=self.y-1 and self.soldado[1]<=self.y+1 ) and self.estado ==1 ):
+            self.x, self.y = self.way.pop()
+            if(len(self.way) == 0 ): #hasta que llegue al ultimo del way
+                self.estado = 2
+            return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
           
         if(run_IDS):
           self.estado = 2
           return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
 
       #si alcanzo el objetivo cambia de direccion
-      elif ((soldado.x>=self.x-1 and soldado.x<=self.x+1 ) and (soldado.y>=self.y-1 and soldado.y<=self.y+1 ) and self.estado ==2 ):
+      
+      elif ((self.soldado[0]>=self.x and self.soldado[0]<=self.x ) and (self.soldado[1]>=self.y and self.soldado[1]<=self.y ) and self.estado ==2 ):
         print("Llegue, cambiame la ruta //IDLE")
         self.estado = 0
     else:

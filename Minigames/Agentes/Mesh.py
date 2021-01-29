@@ -26,13 +26,15 @@ class Mesh:
         self.Grid=[[Node()for i in range(col)] for j in range(row)]# actual representation of grid
         self.fill()
     def Place_character(self,x,y):
-        block_size = (X_MAP_SIZE// self.col_size)//2
+        block_sizex = (X_MAP_SIZE// self.col_size)//2
+        block_sizey = (Y_MAP_SIZE// self.col_size)//2
         for row in self.Grid:
             for elem in row:
-                if( x < (elem.cord[0]+block_size)
-                and x >= (elem.cord[0]-block_size)):
-                    if( y < (elem.cord[1]+block_size)
-                    and y >= (elem.cord[1]-block_size)):
+                if( x < (elem.cord[0]+block_sizex)
+                and x >= (elem.cord[0]-block_sizex)):
+                    if( y < (elem.cord[1]+block_sizey)
+                    and y >= (elem.cord[1]-block_sizey)):
+                        #elem.cord=(x,y)
                         return elem
 
     def Get_relative_cord(self,x,y):

@@ -4,7 +4,7 @@ Y_MAP_SIZE = 64
 
 #MACROBLOCKS
 ROW    = 16
-COL    = 14
+COL    = 12
 
 #ALGORITHM
 run_IDS  = False

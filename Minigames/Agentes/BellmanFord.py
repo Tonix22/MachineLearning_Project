@@ -37,7 +37,7 @@ class BellmanImplicit(Mesh):
 
     def ImplicitBellmanFord(self,soldier,beacon):
         #get the x,y cordenate in Macrobloc format 
-        source = self.Place_character(soldier.x,soldier.y)
+        source = self.Place_character(soldier[0],soldier[1])
         source.value = 0 #f(s) is the Node.value, h(s) is the height, and it is 0
         #self.print_mesh()
         self.Open.queue.clear()
