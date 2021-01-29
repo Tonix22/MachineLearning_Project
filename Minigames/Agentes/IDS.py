@@ -1,8 +1,8 @@
 import math 
 import Params
 
-halfSizeBeacon=1    # center of beacon , ex. +-3, beaconSize 7
-stepSize=2          # Size between spaces in the grid
+halfSizeBeacon=2    # center of beacon , ex. +-3, beaconSize 7
+stepSize=3          # Size between spaces in the grid
 offset=4            # initial condition, offset
 #Generates macroblocks
 cols=math.ceil((Params.X_MAP_SIZE-offset*2)/stepSize) 
@@ -158,7 +158,11 @@ def IDS(node,goal):
 
 #----------------------------------------------------------------------------
 def IDS_BeaconSearchCenterScreen(beaconPos):
-    middle=( math.floor((cols)/2) , math.floor((rows-1)/2) )
+    middle = ( math.floor((cols)/2) , math.floor((rows-1)/2) )
+    return IDS_BeaconSearch(middle,beaconPos)
+
+def IDS_BeaconSearchOtherCenter(center, beaconPos):
+    middle = coordToPos(center,stepSize,offset)
     return IDS_BeaconSearch(middle,beaconPos)
 
 def IDS_BeaconSearch(center, beaconPos):
@@ -166,16 +170,16 @@ def IDS_BeaconSearch(center, beaconPos):
     #Checks that the last calculated position for the beacon is not repeated
     if(lastpos[0]!=beaconPos[0] or lastpos[1]!=beaconPos[1]):
         print('Received new beacon pos: '+str(beaconPos))
-        lastpos=beaconPos
+        lastpos = beaconPos
         ##Informative data
         global nodesExpanded, nodesExplored
         nodesExpanded=1 #1 counting the source
-        nodesExplored=1 #1 counting the source 
+        nodesExplored=0 
         ##Generates the matrix of parents 
         global mArrayParent 
         mArrayParent = calculateMapArrayParent(initializeMapArray(rows,cols),center)
-        ##IDS, calculos
-        result=IDS(center,beaconPos)
+        ##IDS, calculation
+        result = IDS(center,beaconPos)
         lastSentCoord=posToCoord(result,stepSize,offset)
         print("Go to: "+str(lastSentCoord))
         print("cols: "+str(cols)+"; rows: "+str(rows))
