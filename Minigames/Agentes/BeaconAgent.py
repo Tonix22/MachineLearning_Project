@@ -77,17 +77,26 @@ class BeaconAgent(base_agent.BaseAgent):
       elif (self.estado==1):
         print("Ejecutando movimiento")
         if(run_BELL):
-          if ((self.soldado[0]>=self.x-1 and self.soldado[0]<=self.x+1 ) and (self.soldado[1]>=self.y-1 and self.soldado[1]<=self.y+1 ) and self.estado ==1 ):
+          if ((self.soldado[0]>=self.x-3 and self.soldado[0]<=self.x+3 ) and (self.soldado[1]>=self.y-3 and self.soldado[1]<=self.y+3 ) and self.estado ==1 ):
             self.x, self.y = self.way.pop()
             if(len(self.way) == 0 ): #hasta que llegue al ultimo del way
-                self.estado = 2
+                self.estado = 3
+                self.x = int(self.beacon_center[0])
+                self.y = int(self.beacon_center[1])
+                return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
             return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
           
         if(run_IDS):
           self.estado = 2
           return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
+          
+      elif (self.estado>2):
+        self.estado+=1
+        if self.estado==10:
+          self.estado=2
+        return actions.FUNCTIONS.Move_screen("now", (self.x,self.y))
 
-      #si alcanzo el objetivo cambia de direccion
+      #si alcanzo el objetivo cambia de direccion      
       
       elif ((self.soldado[0]>=self.x and self.soldado[0]<=self.x ) and (self.soldado[1]>=self.y and self.soldado[1]<=self.y ) and self.estado ==2 ):
         print("Llegue, cambiame la ruta //IDLE")

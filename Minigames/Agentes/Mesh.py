@@ -27,13 +27,13 @@ class Mesh:
         self.fill()
     def Place_character(self,x,y):
         block_sizex = (X_MAP_SIZE// self.col_size)//2
-        block_sizey = (Y_MAP_SIZE// self.col_size)//2
+        #block_sizey = (Y_MAP_SIZE// self.col_size)//2
         for row in self.Grid:
             for elem in row:
                 if( x < (elem.cord[0]+block_sizex)
                 and x >= (elem.cord[0]-block_sizex)):
-                    if( y < (elem.cord[1]+block_sizey)
-                    and y >= (elem.cord[1]-block_sizey)):
+                    if( y < (elem.cord[1]+block_sizex)
+                    and y >= (elem.cord[1]-block_sizex)):
                         #elem.cord=(x,y)
                         return elem
 
