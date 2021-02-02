@@ -1,0 +1,11 @@
+#MAPSIZE 
+X_MAP_SIZE = 84
+Y_MAP_SIZE = 64
+
+#MACROBLOCKS
+ROW    = 16
+COL    = 12
+
+#ALGORITHM
+run_IDS  = False
+run_BELL = True
