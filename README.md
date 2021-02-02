@@ -9,13 +9,14 @@ $ pip install pysc2
 ```
 Click [here](https://github.com/deepmind/pysc2) for more info about pysc2
 
-###Run an Agent
+### Run an Agent
 
 To run our custom agents, run the following bash comands.
 ```shell
 $ cd Minigames/X_Agent
 $ python XAgent.py
 ```
-###Our Proyects
+### Our Proyects
 
 *   [Beacon Agent](Minigames/BeaconAgent/README.md)
+
