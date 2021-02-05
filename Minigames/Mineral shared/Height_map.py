@@ -47,8 +47,6 @@ class Heightmap():
             print('')
 
     def MapToMatplotlib(self):
-        print(self.rows)
-        print(self.cols)
         y = np.linspace(0,self.rows-1,self.rows)
         x = np.linspace(0,self.cols-1,self.cols)
 
@@ -73,7 +71,7 @@ class Heightmap():
                 m_x = topPivot[0]+x
                 m_y = topPivot[1]+y
                 #if this values exist on th map, perform stamp in coord
-                if(m_x>=0 and m_x<=self.cols and m_y>=0 and m_y<=self.rows):
+                if(m_x>=0 and m_x<=self.cols-1 and m_y>=0 and m_y<=self.rows-1):
                     self.map[m_y][m_x]+=brush[y][x]
                     #Register max or min value if needed
                     self.maxValue = self.map[m_y][m_x] if self.map[m_y][m_x]>self.maxValue else self.maxValue
@@ -105,12 +103,16 @@ if __name__ == "__main__":
         [0,1,1,1,0]]
 
     #But also we can create a brush with functions and have something more precise
-    brush2 = Brush(10) #create empy brush with this diameter
-    brush2.Gaussian(5) #use Gaussian function to fill the matrix, multipy it by this value
+    brush2 = Brush(20) #create empy brush with this diameter
+    brush2.Gaussian(-2) #use Gaussian function to fill the matrix, multipy it by this value
     brush2.printBrush()
 
     #We can now generate our height map, also a 2D Matrix
-    hm_agave = Heightmap(30, 20, 0) #with any array of columns and rows, and default value
-    hm_agave.stampsOnMap([(15,10),(9,10),(1,1),(13,11)], brush2.array) #we will stamp multiple coordinates with the assigned brush
-    hm_agave.printMap()
+    tuplas=[]
+    for i in range(20):
+        tupla=(np.random.randint(84),np.random.randint(64))
+        tuplas.append(tupla)    
+    hm_agave = Heightmap(84, 64, 0) #with any array of columns and rows, and default value
+    hm_agave.stampsOnMap(tuplas, brush2.array) #we will stamp multiple coordinates with the assigned brush
+    #hm_agave.printMap()
     hm_agave.MapToMatplotlib()
