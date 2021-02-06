@@ -1,11 +1,12 @@
 import random
 import math
-import params
 import pylab as plt
 import numpy as np
 from scipy.ndimage.interpolation import rotate
 from mpl_toolkits import mplot3d 
 import matplotlib.pyplot as plt 
+
+from params import *
 
 class annealing:
 
@@ -60,7 +61,7 @@ class annealing:
             #************CHANCE***********#
             #Delta was negative, lets give another chance and 
             #throw a probabilistic shot, maybe we update current 
-            elif (math.exp(Delta_Energy/Temp) > random.uniform(0, 1)):
+            elif (math.exp(Delta_Energy/Temp) > random.uniform(0, 1) and ANNELING_RUN):
                 self.current = Next
                 
             Temp*= self.alpha
@@ -98,5 +99,5 @@ class annealing:
 
 
 if __name__ == "__main__":
-    map = annealing(1000,.99)
-    map.Algo(1000)
+    map = annealing(TEMPERATURE_INIT,ALPHA)
+    map.Algo(ITERATIONS)
