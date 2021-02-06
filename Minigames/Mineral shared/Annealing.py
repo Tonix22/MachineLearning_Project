@@ -1,6 +1,5 @@
 import random
 import math
-import pylab as plt
 import numpy as np
 from scipy.ndimage.interpolation import rotate
 from mpl_toolkits import mplot3d 
@@ -68,13 +67,6 @@ class annealing:
         
         #self.height[self.current[0]][self.current[1]] = 10
         self.Plot_heights()
-
-    def Plot_2D_densisty(self):
-        A = np.fliplr(rotate(np.array(self.height), angle = 180))
-        side = np.linspace(0,14,1)
-        X,Y = np.meshgrid(side,side)
-        plt.pcolormesh(A,cmap ='Blues')
-        plt.show()
 
     def Plot_heights(self):
         x = np.linspace(0,14,15)

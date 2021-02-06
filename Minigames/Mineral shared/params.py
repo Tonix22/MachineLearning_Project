@@ -1,6 +1,15 @@
-Tmax = 100
-Tmin = 0
+import Height_map as hm
 
+#MAP data
+X_SIZE = 84
+Y_SIZE = 64
+BRUSH_DIAMETER = 20
+BRUSH_DECREMENT = -2
+
+MAP = hm.Heightmap(X_SIZE, Y_SIZE, 0)
+brush = hm.Brush(BRUSH_DIAMETER)
+brush.Gaussian(BRUSH_DECREMENT)
+#MAP.stampsOnMap([],brush)
 
 #ALGORITHM
 HILL_CLIMBINT = False
@@ -8,6 +17,6 @@ ANNELING_RUN = not HILL_CLIMBINT
 
 
 #Anneling
-ITERATIONS = 1000
+ITERATIONS = 300
 TEMPERATURE_INIT = 1000
-ALPHA = .99
+ALPHA = .90
