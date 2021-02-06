@@ -91,6 +91,7 @@ class Heightmap():
             self.stampOnMap(center,brush,brushHeight,brushWidth)
         print('Min value in map: '+str(self.minValue))
         print('Max value in map: '+str(self.maxValue))
+        #self.MapToMatplotlib()
 
 
 if __name__ == "__main__":

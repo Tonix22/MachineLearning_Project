@@ -4,7 +4,8 @@ from pysc2.lib import actions, features, units
 import random
 from absl import app
 import numpy
-#from Params import *
+from params import *
+from Annealing import *
 import time
 
 _PLAYER_SELF    = features.PlayerRelative.SELF
@@ -38,7 +39,7 @@ class MineralAgent(base_agent.BaseAgent):
         aciertosC=0#aciertos centro
         aciertosI=0#aciertos Izquierda
         aciertosD=0#aciertos Derecha
-        #En caso de traslape se verifica la mejor posición comparando entre izquierda centro y derecha
+        #En caso de traslape se verifica la mejor posiciï¿½n comparando entre izquierda centro y derecha
         for pixel in pixeles:
             if ((temp[0]+pixel[0],temp[1]+pixel[1]) in coordinates):
                 aciertosC += 1
@@ -48,7 +49,7 @@ class MineralAgent(base_agent.BaseAgent):
         for pixel in pixeles:
             if ((temp[0]+1+pixel[0],temp[1]+pixel[1]) in coordinates):
                 aciertosD += 1
-        # selección de mejor opción de posición
+        # selecciï¿½n de mejor opciï¿½n de posiciï¿½n
         if(aciertosD>aciertosC and aciertosD>aciertosI):
             temp=(temp[0]+1,temp[1])
         elif(aciertosI>aciertosC and aciertosI>aciertosC):
@@ -65,6 +66,9 @@ class MineralAgent(base_agent.BaseAgent):
     super(MineralAgent, self).step(obs)
     if self.flag == 1:
         temp = self.mineralCoordinates(obs)
+        MAP.stampsOnMap(temp,brush.array)
+        search = annealing(TEMPERATURE_INIT,ALPHA)
+        search.Algo(ITERATIONS)
         self.flag=0
     return actions.FUNCTIONS.no_op()
 
