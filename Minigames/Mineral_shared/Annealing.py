@@ -68,7 +68,7 @@ class annealing:
         ax.plot_surface(X, Y, Z, cmap ='viridis', edgecolor ='green')
         ax.plot_surface(X, Y, Z, cmap ='viridis', edgecolor ='green') 
         ax.set_title('Minerales en mapa')
-        ax.scatter(self.current[0], self.current[1],18,s=100,color='red')
+        ax.scatter(self.current[0], self.current[1],22,s=100,color='red')
         plt.show() 
 
 

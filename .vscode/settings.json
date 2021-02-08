@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\shouj\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe"
+    "python.pythonPath": "C:\\Users\\shouj\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+    "cmake.configureOnOpen": false
 }

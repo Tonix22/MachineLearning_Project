@@ -3,8 +3,8 @@ import Height_map as hm
 #MAP data
 X_SIZE = 84
 Y_SIZE = 64
-BRUSH_DIAMETER = 5
-BRUSH_DECREMENT = 10
+BRUSH_DIAMETER = 30
+BRUSH_DECREMENT = 3
 
 MAP = hm.Heightmap(X_SIZE, Y_SIZE, 0)
 brush = hm.Brush(BRUSH_DIAMETER)
