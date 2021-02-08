@@ -48,9 +48,13 @@ class annealing:
                 self.current = Next
                 
             Temp*= self.alpha
+
+        if(PLOT_ENABLE is True):
+            self.height[self.current[0]][self.current[1]] = 10
+            self.Plot_heights()
         
-        #self.height[self.current[0]][self.current[1]] = 10
-        self.Plot_heights()
+        return self.current
+        
 
     def Plot_heights(self):
         x = np.linspace(0,X_SIZE-1,X_SIZE)

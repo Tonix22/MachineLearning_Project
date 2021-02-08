@@ -26,6 +26,7 @@ class MineralAgent(base_agent.BaseAgent):
   def __init__(self):
     super(MineralAgent, self).__init__()
     self.flag = 1
+    self.Mineral_cords = (0,0)
 
   def mineralCoordinates(self,obs):
     player_relative = obs.observation.feature_screen.player_relative
@@ -62,14 +63,33 @@ class MineralAgent(base_agent.BaseAgent):
                 del coordinates[coordinates.index((temp[0]+pixel[0],temp[1]+pixel[1]))]
 
     return coor
+
+  def marinesCapture(self,obs,index):
+
+    marines = [unit for unit in obs.observation.feature_units
+              if unit.unit_type == units.Terran.Marine]
+
+    if len(marines) > 0:
+      return marines[index]
+    else :
+      return None
+
   def step(self, obs):
     super(MineralAgent, self).step(obs)
     if self.flag == 1:
-        temp = self.mineralCoordinates(obs)
-        MAP.stampsOnMap(temp,brush.array)
-        search = annealing(TEMPERATURE_INIT,ALPHA)
-        search.Algo(ITERATIONS)
-        self.flag=0
+      minerals = self.mineralCoordinates(obs)
+      marine   = self.marinesCapture(obs,0)
+
+      MAP.stampsOnMap(minerals,brush.array)
+      search = annealing(TEMPERATURE_INIT,ALPHA)
+      self.Mineral_cords = search.Algo(ITERATIONS)
+      self.flag=0
+
+      return actions.FUNCTIONS.select_point("select",(marine.x,marine.y))
+
+    if actions.FUNCTIONS.Move_screen.id in obs.observation.available_actions:
+      return actions.FUNCTIONS.Move_screen("now", ( self.Mineral_cords[0], self.Mineral_cords[1]))
+       
     return actions.FUNCTIONS.no_op()
 
 def main(unused_argv):
