@@ -36,7 +36,7 @@ class annealing:
         
             #************DELTA***********#
             Delta_Energy = Energy_Flanders - Energy_current
-            
+
             #************UPDATE***********#
             if(Delta_Energy > 0): # if positive 
                 self.current = Next
@@ -44,13 +44,12 @@ class annealing:
             #************CHANCE***********#
             #Delta was negative, lets give another chance and 
             #throw a probabilistic shot, maybe we update current 
-            elif (math.exp(Delta_Energy/Temp) > random.uniform(0, 1) and ANNELING_RUN):
+            elif (Delta_Energy!= 0 and math.exp(Delta_Energy/Temp) > random.uniform(0, 1) and ANNELING_RUN):
                 self.current = Next
                 
             Temp*= self.alpha
 
         if(PLOT_ENABLE is True):
-            self.height[self.current[0]][self.current[1]] = 10
             self.Plot_heights()
         
         return self.current
@@ -72,7 +71,7 @@ class annealing:
         ax.plot_surface(X, Y, Z, cmap ='viridis', edgecolor ='green')
         ax.plot_surface(X, Y, Z, cmap ='viridis', edgecolor ='green') 
         ax.set_title('Minerales en mapa')
-        ax.scatter(self.current[0], self.current[1],22,s=100,color='red')
+        ax.scatter(self.current[0], self.current[1],30,s=100,color='red')
         plt.show() 
 
 
