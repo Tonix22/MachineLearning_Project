@@ -38,6 +38,7 @@ class Heightmap():
         self.cols = mapWidth
         self.minValue = defaultValue
         self.maxValue = defaultValue
+        self.defaultValue = defaultValue
     
     #Prints the map in the console
     def printMap(self):
@@ -85,6 +86,7 @@ class Heightmap():
     
     #Function that stamps multiple times on the map, it needs an array of coords
     def stampsOnMap(self, centers, brush):
+        self.map = [[self.defaultValue for i in range(self.cols)] for j in range(self.rows)]
         brushHeight = len(brush)
         brushWidth = len(brush[0])
         for center in centers:
