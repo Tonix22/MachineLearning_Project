@@ -26,7 +26,10 @@ class MineralAgent(base_agent.BaseAgent):
   def __init__(self):
     super(MineralAgent, self).__init__()
     self.flag = 1
+    self.flagMov = 1
     self.Mineral_cords = (0,0)
+    self.marine = 0
+    self.marine2 = 0
 
   def mineralCoordinates(self,obs):
     player_relative = obs.observation.feature_screen.player_relative
@@ -76,25 +79,45 @@ class MineralAgent(base_agent.BaseAgent):
 
   def step(self, obs):
     super(MineralAgent, self).step(obs)
+    self.marine   = self.marinesCapture(obs,0)
+    self.marine2   = self.marinesCapture(obs,1)
     if self.flag == 1:
+      #setup
+      self.flag = 2
+    if self.flag == 2:
+      #calcular
+      print("Calculando ruta")
       minerals = self.mineralCoordinates(obs)
-      marine   = self.marinesCapture(obs,0)
-
       MAP.stampsOnMap(minerals,brush.array)
+
       search = annealing(TEMPERATURE_INIT,ALPHA)
       self.Mineral_cords = search.Algo(ITERATIONS)
-      self.flag=2
 
-      return actions.FUNCTIONS.select_point("select",(marine.x,marine.y))
-
-    if actions.FUNCTIONS.Move_screen.id in obs.observation.available_actions:
-        return actions.FUNCTIONS.Move_screen("now", ( self.Mineral_cords[0], self.Mineral_cords[1]))
+      #search2 aqui?
+      #mineral_cords2 aqui?
+      self.flag=3
+    if self.flag == 3:
+      #clicks : selection and moves
+      if self.flagMov == 1:
+        self.flagMov = 2
+        return actions.FUNCTIONS.select_point("select",(self.marine.x,self.marine.y))
+        #return actions.FUNCTIONS.select_army("select")
+      if self.flagMov ==2:
+        self.flagMov = 1 #reinicia
+        self.flag = 4
+        if actions.FUNCTIONS.Move_screen.id in obs.observation.available_actions:
+            return actions.FUNCTIONS.Move_screen("now", ( self.Mineral_cords[0], self.Mineral_cords[1]))
+    if self.flag == 4:
+      #Wait for arrival of marines
+      print(f'Marine esta en : {self.marine.x},{self.marine.y}, y Llego a : {self.Mineral_cords[0]},{self.Mineral_cords[1]}')
+      if(self.marine.x==self.Mineral_cords[0] and self.marine.y==self.Mineral_cords[1]):
+        self.flag = 2
     
-    if self.flag == 2 :
-      marine   = self.marinesCapture(obs,0)
-      minerals = self.mineralCoordinates(obs)
+    #if self.flag == 2 :
+      #marine   = self.marinesCapture(obs,0)
+      #minerals = self.mineralCoordinates(obs)
       #print (minerals)
-      self.flag == 0 # TODO DELETE THIS LINE
+      #self.flag == 0 # TODO DELETE THIS LINE
       #return actions.FUNCTIONS.select_point("select",(marine.x,marine.y))
        
     return actions.FUNCTIONS.no_op()
