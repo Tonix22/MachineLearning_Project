@@ -76,27 +76,25 @@ class MineralAgent(base_agent.BaseAgent):
 
   def step(self, obs):
     super(MineralAgent, self).step(obs)
+    if actions.FUNCTIONS.Move_screen.id in obs.observation.available_actions:
+        marine   = self.marinesCapture(obs,0)
+        if(marine.x == self.Mineral_cords[0] and marine.y == self.Mineral_cords[1]):
+          self.Mineral_cords = self.mineralCoordinates(obs)[0]
+
+        return actions.FUNCTIONS.Move_screen("now", ( self.Mineral_cords[0], self.Mineral_cords[1]))
+      
+
     if self.flag == 1:
       minerals = self.mineralCoordinates(obs)
       marine   = self.marinesCapture(obs,0)
-
+      marine.is_selected = True
       MAP.stampsOnMap(minerals,brush.array)
       search = annealing(TEMPERATURE_INIT,ALPHA)
       self.Mineral_cords = search.Algo(ITERATIONS)
       self.flag=2
-
       return actions.FUNCTIONS.select_point("select",(marine.x,marine.y))
 
-    if actions.FUNCTIONS.Move_screen.id in obs.observation.available_actions:
-        return actions.FUNCTIONS.Move_screen("now", ( self.Mineral_cords[0], self.Mineral_cords[1]))
-    
-    if self.flag == 2 :
-      marine   = self.marinesCapture(obs,0)
-      minerals = self.mineralCoordinates(obs)
-      #print (minerals)
-      self.flag == 0 # TODO DELETE THIS LINE
-      #return actions.FUNCTIONS.select_point("select",(marine.x,marine.y))
-       
+  
     return actions.FUNCTIONS.no_op()
 
 def main(unused_argv):
