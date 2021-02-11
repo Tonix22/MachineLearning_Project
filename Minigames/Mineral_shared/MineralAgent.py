@@ -126,7 +126,11 @@ class MineralAgent(base_agent.BaseAgent):
       #calcular
       print("Calculando ruta")
       minerals = self.mineralCoordinates(obs)
-      MAP.stampsOnMap(minerals,brush.array)
+      
+      brush.resize(BRUSH_DIAMETER/ (((len(minerals)/20)*0.5)+0.5))
+      print(f'New brush size: {len(brush.array)}')
+      MAP.stampsOnMap(minerals,brush.array) 
+
       if len(minerals) > 5:
         HILL_CLIMB = False
         

@@ -9,17 +9,31 @@ class Brush():
     #Creates empty brush
     def __init__(self, diameter):
         self.array = [[0 for i in range(diameter)] for j in range(diameter)]
+        self.gaussian = False
+        self.max = 0
         self.diameter = diameter
         self.radius = math.floor(diameter/2)
         self.centerPerfect = True if diameter%2==1 else False 
 
     #Uses a gaussian function to fill our brush, then uses multiplier
     def Gaussian(self, maxValue):
+        self.gaussian = True
+        self.max = maxValue
         x, y = np.meshgrid(np.linspace(-1,1,self.diameter), np.linspace(-1,1,self.diameter))
         d = np.sqrt(x*x+y*y)
         sigma, mu = 1.0, 0.0
         g = np.exp(-( (d-mu)**2 / ( 2.0 * sigma**2 ) ) )
         self.array = (g * maxValue) 
+    
+    def resize(self,newSize):
+        self.diameter = math.floor(newSize)
+        self.radius = math.floor(self.diameter/2)
+        self.centerPerfect = True if self.diameter%2==1 else False 
+        #print(f'New brush size: {newSize}')
+        #self.array.reshape(newize,newSize)
+        #self.array = [[0 for i in range(newSize)] for j in range(newSize)]
+        if(self.gaussian):
+            self.Gaussian(self.max)
 
     #prints Brush values in the console
     def printBrush(self):
@@ -54,7 +68,7 @@ class Heightmap():
         X, Y = np.meshgrid(x, y)
         Z = np.array(self.map)
 
-        fig = plt.figure()
+        plt.figure()
 
         # syntax for 3-D plotting
         ax = plt.axes(projection ='3d')
@@ -86,6 +100,7 @@ class Heightmap():
     
     #Function that stamps multiple times on the map, it needs an array of coords
     def stampsOnMap(self, centers, brush):
+        #apply stamps on map
         self.map = [[self.defaultValue for i in range(self.cols)] for j in range(self.rows)]
         brushHeight = len(brush)
         brushWidth = len(brush[0])
