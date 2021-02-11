@@ -126,9 +126,7 @@ class MineralAgent(base_agent.BaseAgent):
       #calcular
       print("Calculando ruta")
       minerals = self.mineralCoordinates(obs)
-      
-      brush.resize(BRUSH_DIAMETER/ (((len(minerals)/20)*0.5)+0.5))
-      print(f'New brush size: {len(brush.array)}')
+
       MAP.stampsOnMap(minerals,brush.array) 
 
       if len(minerals) > 5:
@@ -138,6 +136,7 @@ class MineralAgent(base_agent.BaseAgent):
         HILL_CLIMB = True
         BRUSH_DIAMETER = 10
         BRUSH_DECREMENT = 20
+        brush.resize(BRUSH_DIAMETER,BRUSH_DECREMENT) 
 
       search = annealing(TEMPERATURE_INIT,ALPHA)
       self.Mineral_cords = search.Algo(ITERATIONS)

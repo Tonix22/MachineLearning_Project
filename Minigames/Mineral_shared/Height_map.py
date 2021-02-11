@@ -12,8 +12,8 @@ class Brush():
         self.gaussian = False
         self.max = 0
         self.diameter = diameter
-        self.radius = math.floor(diameter/2)
-        self.centerPerfect = True if diameter%2==1 else False 
+        #self.radius = math.floor(diameter/2)
+        #self.centerPerfect = True if diameter%2==1 else False 
 
     #Uses a gaussian function to fill our brush, then uses multiplier
     def Gaussian(self, maxValue):
@@ -25,13 +25,11 @@ class Brush():
         g = np.exp(-( (d-mu)**2 / ( 2.0 * sigma**2 ) ) )
         self.array = (g * maxValue) 
     
-    def resize(self,newSize):
+    def resize(self,newSize,newheight):
+        self.max = newheight
         self.diameter = math.floor(newSize)
-        self.radius = math.floor(self.diameter/2)
-        self.centerPerfect = True if self.diameter%2==1 else False 
-        #print(f'New brush size: {newSize}')
-        #self.array.reshape(newize,newSize)
-        #self.array = [[0 for i in range(newSize)] for j in range(newSize)]
+        #self.radius = math.floor(self.diameter/2)
+        #self.centerPerfect = True if self.diameter%2==1 else False 
         if(self.gaussian):
             self.Gaussian(self.max)
 
