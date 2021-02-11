@@ -3,7 +3,7 @@ import math
 #MAP data
 X_SIZE = 84
 Y_SIZE = 64
-BRUSH_DIAMETER = 30
+BRUSH_DIAMETER = 20
 BRUSH_DECREMENT = 5
 
 MAP = hm.Heightmap(X_SIZE, Y_SIZE, 0)
@@ -13,7 +13,6 @@ brush.Gaussian(BRUSH_DECREMENT)
 
 #DEBUGING
 PLOT_ENABLE = True
-
 #ALGORITHM
 
 HILL_CLIMB    = False

@@ -127,6 +127,13 @@ class MineralAgent(base_agent.BaseAgent):
       print("Calculando ruta")
       minerals = self.mineralCoordinates(obs)
       MAP.stampsOnMap(minerals,brush.array)
+      if len(minerals) > 5:
+        HILL_CLIMB = False
+        
+      else:
+        HILL_CLIMB = True
+        BRUSH_DIAMETER = 10
+        BRUSH_DECREMENT = 20
 
       search = annealing(TEMPERATURE_INIT,ALPHA)
       self.Mineral_cords = search.Algo(ITERATIONS)
@@ -156,7 +163,7 @@ class MineralAgent(base_agent.BaseAgent):
         self.flagMov = 1 #reinicia
         self.flag = 4
         if actions.FUNCTIONS.Move_screen.id in obs.observation.available_actions:
-            return actions.FUNCTIONS.Move_screen("now", ( abs(self.Mineral_cords[0]-84), abs(self.Mineral_cords[1]-64)))
+            return actions.FUNCTIONS.Move_screen("now", ( random.randint(1,84), random.randint(1,64)))
     if self.flag == 4:
       #Wait for arrival of marines
       print("Cordenadas de minarales")
@@ -164,7 +171,7 @@ class MineralAgent(base_agent.BaseAgent):
       print("Cordenadas de soldados")
       print(self.Marine_cords)
       self.error += 1
-      if((self.Mineral_cords[0],self.Mineral_cords[1]) in self.Marine_cords or self.error > 100):
+      if((self.Mineral_cords[0],self.Mineral_cords[1]) in self.Marine_cords or self.error > 200):
         self.error = 0
         self.flag = 2
     
