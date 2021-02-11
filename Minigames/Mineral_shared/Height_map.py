@@ -12,11 +12,39 @@ class Brush():
         self.gaussian = False
         self.max = 0
         self.diameter = diameter
-        #self.radius = math.floor(diameter/2)
+        self.radius = math.floor(diameter/2)
         #self.centerPerfect = True if diameter%2==1 else False 
+
+    def multivariate_gaussian(self, pos, mu, Sigma):
+        """Return the multivariate Gaussian distribution on array pos.
+        pos is an array constructed by packing the meshed arrays of variables
+        x_1, x_2, x_3, ..., x_k into its _last_ dimension.
+        """
+        n = mu.shape[0]
+        Sigma_det = np.linalg.det(Sigma)
+        Sigma_inv = np.linalg.inv(Sigma)
+        N = np.sqrt((2*np.pi)**n * Sigma_det)
+        # This einsum call calculates (x-mu)T.Sigma-1.(x-mu) in a vectorized
+        # way across all the input variables.
+        fac = np.einsum('...k,kl,...l->...', pos-mu, Sigma_inv, pos-mu)
+        return np.exp(-fac / 2) / N
 
     #Uses a gaussian function to fill our brush, then uses multiplier
     def Gaussian(self, maxValue):
+        self.gaussian = True
+        self.max = maxValue
+        # Our 2-dimensional distribution will be over variables X and Y
+        X, Y = np.meshgrid(np.linspace(-3,3,self.diameter*2), np.linspace(-3,4,self.diameter*2))
+        # Mean vector and covariance matrix
+        mu = np.array([0., 1.])
+        Sigma = np.array([[ 1. , -0.5], [-0.5,  1.5]])
+        # Pack X and Y into a single 3-dimensional array
+        pos = np.empty(X.shape + (2,))
+        pos[:, :, 0] = X
+        pos[:, :, 1] = Y
+        self.array = self.multivariate_gaussian(pos, mu, Sigma)*maxValue*10
+
+    def Gaussian_v2(self, maxValue):
         self.gaussian = True
         self.max = maxValue
         x, y = np.meshgrid(np.linspace(-1,1,self.diameter), np.linspace(-1,1,self.diameter))
@@ -24,7 +52,7 @@ class Brush():
         sigma, mu = 1.0, 0.0
         g = np.exp(-( (d-mu)**2 / ( 2.0 * sigma**2 ) ) )
         self.array = (g * maxValue) 
-    
+
     def resize(self,newSize,newheight):
         self.max = newheight
         self.diameter = math.floor(newSize)
@@ -120,15 +148,15 @@ if __name__ == "__main__":
 
     #But also we can create a brush with functions and have something more precise
     brush2 = Brush(20) #create empy brush with this diameter
-    brush2.Gaussian(-2) #use Gaussian function to fill the matrix, multipy it by this value
+    brush2.Gaussian(1) #use Gaussian function to fill the matrix, multipy it by this value
     brush2.printBrush()
 
     #We can now generate our height map, also a 2D Matrix
     tuplas=[]
-    for i in range(20):
-        tupla=(np.random.randint(84),np.random.randint(64))
+    for i in range(10):
+        tupla=(np.random.randint(84),np.random.randint(84))
         tuplas.append(tupla)    
-    hm_agave = Heightmap(84, 64, 0) #with any array of columns and rows, and default value
+    hm_agave = Heightmap(84, 84, 0) #with any array of columns and rows, and default value
     hm_agave.stampsOnMap(tuplas, brush2.array) #we will stamp multiple coordinates with the assigned brush
     #hm_agave.printMap()
     hm_agave.MapToMatplotlib()
