@@ -28,9 +28,46 @@ class MineralAgent(base_agent.BaseAgent):
     self.flag = 1
     self.flagMov = 1
     self.Mineral_cords = (0,0)
+    self.Marine_cords=0
     self.marine = 0
     self.marine2 = 0
+    self.error = 0
+  
+  def marineCoordinates(self,obs):
+    player_relative = obs.observation.feature_screen.player_relative
+    coordinates = _xy_locs(player_relative == _PLAYER_SELF)
+    coordinates = sorted(coordinates , key=lambda k: [k[1], k[0]])
+    coor = list()#lista de coordenadas final
+    #patron de pixeles relativos del cristal
+    pixeles=[(1,0),(2,0),(0,1),(1,1),(2,1),(0,2),(1,2),(2,2)]
+    while (len(coordinates)>0):
+        temp = coordinates[0]        
+        aciertosC=0#aciertos centro
+        aciertosI=0#aciertos Izquierda
+        aciertosD=0#aciertos Derecha
+        #En caso de traslape se verifica la mejor posici�n comparando entre izquierda centro y derecha
+        for pixel in pixeles:
+            if ((temp[0]+pixel[0],temp[1]+pixel[1]) in coordinates):
+                aciertosC += 1
+        for pixel in pixeles:
+            if ((temp[0]-1+pixel[0],temp[1]+pixel[1]) in coordinates):
+                aciertosI += 1
+        for pixel in pixeles:
+            if ((temp[0]+1+pixel[0],temp[1]+pixel[1]) in coordinates):
+                aciertosD += 1
+        # selecci�n de mejor opci�n de posici�n
+        if(aciertosD>aciertosC and aciertosD>aciertosI):
+            temp=(temp[0]+1,temp[1])
+        elif(aciertosI>aciertosC and aciertosI>aciertosC):
+            temp=(temp[0]-1,temp[1])
+        #borrar coordenadas
+        del coordinates[0]
+        coor.append((temp[0]+1,temp[1]+1))#agrega coordenada
+        for pixel in pixeles:
+            if ((temp[0]+pixel[0],temp[1]+pixel[1]) in coordinates):
+                del coordinates[coordinates.index((temp[0]+pixel[0],temp[1]+pixel[1]))]
 
+    return coor
   def mineralCoordinates(self,obs):
     player_relative = obs.observation.feature_screen.player_relative
     coordinates = _xy_locs(player_relative == _PLAYER_NEUTRAL)
@@ -79,8 +116,9 @@ class MineralAgent(base_agent.BaseAgent):
 
   def step(self, obs):
     super(MineralAgent, self).step(obs)
-    self.marine   = self.marinesCapture(obs,0)
-    self.marine2   = self.marinesCapture(obs,1)
+    self.Marine_cords = self.marineCoordinates(obs)
+    #self.marine   = self.marinesCapture(obs,0)
+    #self.marine2   = self.marinesCapture(obs,1)
     if self.flag == 1:
       #setup
       self.flag = 2
@@ -99,18 +137,35 @@ class MineralAgent(base_agent.BaseAgent):
     if self.flag == 3:
       #clicks : selection and moves
       if self.flagMov == 1:
+        self.marine = self.Marine_cords[0]
+        self.marine2 = self.Marine_cords[1]
         self.flagMov = 2
-        return actions.FUNCTIONS.select_point("select",(self.marine.x,self.marine.y))
+        return actions.FUNCTIONS.select_point("select",(self.marine[0],self.marine[1]))
         #return actions.FUNCTIONS.select_army("select")
       if self.flagMov ==2:
+        self.flagMov = 3
+        #self.flagMov = 1 #reinicia
+        #self.flag = 4
+        if actions.FUNCTIONS.Move_screen.id in obs.observation.available_actions:
+            return actions.FUNCTIONS.Move_screen("now", ( self.Mineral_cords[0], self.Mineral_cords[1]))
+      if self.flagMov == 3:
+        self.flagMov = 4
+        return actions.FUNCTIONS.select_point("select",(self.marine2[0],self.marine2[1]))
+        #return actions.FUNCTIONS.select_army("select")
+      if self.flagMov ==4:
         self.flagMov = 1 #reinicia
         self.flag = 4
         if actions.FUNCTIONS.Move_screen.id in obs.observation.available_actions:
-            return actions.FUNCTIONS.Move_screen("now", ( self.Mineral_cords[0], self.Mineral_cords[1]))
+            return actions.FUNCTIONS.Move_screen("now", ( abs(self.Mineral_cords[0]-84), abs(self.Mineral_cords[1]-64)))
     if self.flag == 4:
       #Wait for arrival of marines
-      print(f'Marine esta en : {self.marine.x},{self.marine.y}, y Llego a : {self.Mineral_cords[0]},{self.Mineral_cords[1]}')
-      if(self.marine.x==self.Mineral_cords[0] and self.marine.y==self.Mineral_cords[1]):
+      print("Cordenadas de minarales")
+      print(self.Mineral_cords)
+      print("Cordenadas de soldados")
+      print(self.Marine_cords)
+      self.error += 1
+      if((self.Mineral_cords[0],self.Mineral_cords[1]) in self.Marine_cords or self.error > 100):
+        self.error = 0
         self.flag = 2
     
     #if self.flag == 2 :
