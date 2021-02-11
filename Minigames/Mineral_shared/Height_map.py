@@ -9,11 +9,10 @@ class Brush():
     #Creates empty brush
     def __init__(self, diameter):
         self.array = [[0 for i in range(diameter)] for j in range(diameter)]
-        self.gaussian = False
+        self.gaussian = 0
         self.max = 0
         self.diameter = diameter
         self.radius = math.floor(diameter/2)
-        #self.centerPerfect = True if diameter%2==1 else False 
 
     def multivariate_gaussian(self, pos, mu, Sigma):
         """Return the multivariate Gaussian distribution on array pos.
@@ -27,14 +26,14 @@ class Brush():
         # This einsum call calculates (x-mu)T.Sigma-1.(x-mu) in a vectorized
         # way across all the input variables.
         fac = np.einsum('...k,kl,...l->...', pos-mu, Sigma_inv, pos-mu)
-        return np.exp(-fac / 2) / N
+        return np.exp( -fac / 2) / N
 
     #Uses a gaussian function to fill our brush, then uses multiplier
     def Gaussian(self, maxValue):
-        self.gaussian = True
+        self.gaussian = 1
         self.max = maxValue
         # Our 2-dimensional distribution will be over variables X and Y
-        X, Y = np.meshgrid(np.linspace(-3,3,self.diameter*2), np.linspace(-3,4,self.diameter*2))
+        X, Y = np.meshgrid(np.linspace(-3,3,self.diameter*2), np.linspace(-3,3,self.diameter*2))
         # Mean vector and covariance matrix
         mu = np.array([0., 1.])
         Sigma = np.array([[ 1. , -0.5], [-0.5,  1.5]])
@@ -45,7 +44,7 @@ class Brush():
         self.array = self.multivariate_gaussian(pos, mu, Sigma)*maxValue*10
 
     def Gaussian_v2(self, maxValue):
-        self.gaussian = True
+        self.gaussian = 2
         self.max = maxValue
         x, y = np.meshgrid(np.linspace(-1,1,self.diameter), np.linspace(-1,1,self.diameter))
         d = np.sqrt(x*x+y*y)
@@ -56,10 +55,11 @@ class Brush():
     def resize(self,newSize,newheight):
         self.max = newheight
         self.diameter = math.floor(newSize)
-        #self.radius = math.floor(self.diameter/2)
-        #self.centerPerfect = True if self.diameter%2==1 else False 
-        if(self.gaussian):
+        self.radius = math.floor(self.diameter/2)
+        if(self.gaussian==1):
             self.Gaussian(self.max)
+        elif(self.gaussian==2):
+            self.Gaussian_v2(self.max)
 
     #prints Brush values in the console
     def printBrush(self):
