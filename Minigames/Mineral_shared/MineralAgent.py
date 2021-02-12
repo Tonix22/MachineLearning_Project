@@ -183,7 +183,8 @@ class MineralAgent(base_agent.BaseAgent):
       print("Cordenadas de soldados")
       print(self.Marine_cords)
       self.error += 1
-      if((self.Mineral_cords[0],self.Mineral_cords[1]) in self.Marine_cords or self.error > 100):
+      if((((self.Mineral_cords[0],self.Mineral_cords[1]) in self.Marine_cords)
+      and ((self.Mineral_cords_A[0],self.Mineral_cords_A[1]) in self.Marine_cords)) or self.error > 100):
         self.error = 0
         self.flag = 2
     
