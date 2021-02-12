@@ -6,6 +6,7 @@ from absl import app
 import numpy
 from params import *
 from Annealing import *
+from A_star import *
 import time
 
 _PLAYER_SELF    = features.PlayerRelative.SELF
@@ -32,6 +33,7 @@ class MineralAgent(base_agent.BaseAgent):
     self.marine = 0
     self.marine2 = 0
     self.error = 0
+    self.Mineral_cords_A = 0
   
   def marineCoordinates(self,obs):
     player_relative = obs.observation.feature_screen.player_relative
@@ -139,7 +141,14 @@ class MineralAgent(base_agent.BaseAgent):
         brush.resize(BRUSH_DIAMETER,BRUSH_DECREMENT) 
 
       search = annealing(TEMPERATURE_INIT,ALPHA)
+      if (self.Marine_cords[1][0] < X_SIZE and self.Marine_cords[1][1] < Y_SIZE):
+        print(f"Cordenadas x{self.Marine_cords[1][0]},y{self.Marine_cords[1][1]}")
+        a = A(MAP.map,(self.Marine_cords[1][0],self.Marine_cords[1][1]))
+        self.Mineral_cords_A = a.aplus()
+
       self.Mineral_cords = search.Algo(ITERATIONS)
+      
+
 
       #search2 aqui?
       #mineral_cords2 aqui?
@@ -166,7 +175,7 @@ class MineralAgent(base_agent.BaseAgent):
         self.flagMov = 1 #reinicia
         self.flag = 4
         if actions.FUNCTIONS.Move_screen.id in obs.observation.available_actions:
-            return actions.FUNCTIONS.Move_screen("now", ( random.randint(1,84), random.randint(1,64)))
+            return actions.FUNCTIONS.Move_screen("now", self.Mineral_cords_A)
     if self.flag == 4:
       #Wait for arrival of marines
       print("Cordenadas de minarales")
@@ -174,7 +183,7 @@ class MineralAgent(base_agent.BaseAgent):
       print("Cordenadas de soldados")
       print(self.Marine_cords)
       self.error += 1
-      if((self.Mineral_cords[0],self.Mineral_cords[1]) in self.Marine_cords or self.error > 200):
+      if((self.Mineral_cords[0],self.Mineral_cords[1]) in self.Marine_cords or self.error > 100):
         self.error = 0
         self.flag = 2
     
