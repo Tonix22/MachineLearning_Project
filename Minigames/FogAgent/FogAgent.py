@@ -68,7 +68,10 @@ class FogAgent(base_agent.BaseAgent):
               self.destino = (random.randint(5, 61),random.randint(5, 55))
               return actions.FUNCTIONS.Attack_minimap("now", self.destino)
         
-        if (self.estado == 1 and (self.destino[1] in range(marine_y.min()-2,marine_y.max()+2) ) and (self.destino[0] in range(marine_x.min()-2,marine_x.max()+2) )):
+        self.destino = (min(self.destino[0],55), max(20,self.destino[1]))
+        #self.destino = (min(self.destino[0]+2,55), min(54,self.destino[1]+2))
+
+        if (self.estado == 1 and (self.destino[1] in range(marine_y.min()-2,marine_y.max()+2) ) and (min(self.destino[0],55) in range(marine_x.min()-2,marine_x.max()+2) )):
           self.estado = 0
           #input('Pause')
 
