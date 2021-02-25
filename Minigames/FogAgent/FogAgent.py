@@ -46,6 +46,9 @@ class FogAgent(base_agent.BaseAgent):
     def step(self, obs):
         super(FogAgent, self).step(obs)
         vision = obs.observation["feature_minimap"][_VISIBILITY_MAP]
+        pathable = obs.observation["feature_minimap"][9]
+        if(pathable[12][12]): #pathable[y][x]
+          print('se puede caminar')
         marine_y, marine_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_SELF).nonzero()
         if(self.capture == True):
             self.capture = False
