@@ -5,6 +5,8 @@ import random
 from absl import app
 import time
 
+_PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
+_PLAYER_HOSTILE = 4
 _PLAYER_SELF    = features.PlayerRelative.SELF
 _PLAYER_NEUTRAL = features.PlayerRelative.NEUTRAL
 
@@ -24,6 +26,7 @@ class FogAgent(base_agent.BaseAgent):
         self.capture = True
         self.marines = []
         self.zergs   = []
+        self.seenEnemies = set()
 
     def get_fighters(self,obs,fighter_type):
         
@@ -44,13 +47,18 @@ class FogAgent(base_agent.BaseAgent):
             self.capture = False
             print("zerings")
             self.zergs = self.get_fighters(obs,units.Zerg.Zergling)
-            print("Marines")
-            self.marines = self.get_fighters(obs,units.Terran.Marine)
+           
+            #enemy_y, enemy_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_HOSTILE).nonzero()
+            #print(len(enemy_y))
             return actions.FUNCTIONS.select_army("select")
 
-        if actions.FUNCTIONS.Attack_screen.id in obs.observation.available_actions:
-          return actions.FUNCTIONS.Attack_screen("now", (self.zergs[0].x,self.zergs[0].y))
-        
+        enemy_y, enemy_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_HOSTILE).nonzero()
+        if actions.FUNCTIONS.Attack_minimap.id in obs.observation.available_actions:
+          if(len(enemy_y > 0)):
+            return actions.FUNCTIONS.Attack_minimap("now", (enemy_x[0],enemy_y[0]))
+          else:
+            return actions.FUNCTIONS.Attack_minimap("now", (random.randint(0, 64),random.randint(0, 64)))
+          
         return actions.FUNCTIONS.no_op()
 
 def main(unused_argv):
