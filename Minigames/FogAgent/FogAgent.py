@@ -4,13 +4,13 @@ from pysc2.lib import actions, features, units
 import random
 from absl import app
 import time
-
+from statistics import mean 
 _PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
 _PLAYER_HOSTILE = 4
 _PLAYER_SELF    = features.PlayerRelative.SELF
 _PLAYER_NEUTRAL = features.PlayerRelative.NEUTRAL
 
-
+_VISIBILITY_MAP = features.SCREEN_FEATURES.visibility_map.index
 
 def _xy_locs(mask):
   """Mask should be a set of bools from comparison with a feature layer."""
@@ -27,6 +27,8 @@ class FogAgent(base_agent.BaseAgent):
         self.marines = []
         self.zergs   = []
         self.seenEnemies = set()
+        self.estado = 0
+        self.destino = (0,0)
 
     def get_fighters(self,obs,fighter_type):
         
@@ -43,22 +45,36 @@ class FogAgent(base_agent.BaseAgent):
 
     def step(self, obs):
         super(FogAgent, self).step(obs)
+        vision = obs.observation["feature_minimap"][_VISIBILITY_MAP]
+        marine_y, marine_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_SELF).nonzero()
         if(self.capture == True):
             self.capture = False
-            print("zerings")
-            self.zergs = self.get_fighters(obs,units.Zerg.Zergling)
-           
+            #print("zerings")
+            #self.zergs = self.get_fighters(obs,units.Zerg.Zergling)
+            enemy_y, enemy_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_HOSTILE).nonzero()
             #enemy_y, enemy_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_HOSTILE).nonzero()
             #print(len(enemy_y))
             return actions.FUNCTIONS.select_army("select")
-
-        enemy_y, enemy_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_HOSTILE).nonzero()
-        if actions.FUNCTIONS.Attack_minimap.id in obs.observation.available_actions:
-          if(len(enemy_y > 0)):
-            return actions.FUNCTIONS.Attack_minimap("now", (enemy_x[0],enemy_y[0]))
-          else:
-            return actions.FUNCTIONS.Attack_minimap("now", (random.randint(0, 64),random.randint(0, 64)))
+        if (self.estado == 0):
+          self.estado = 1
+          enemy_y, enemy_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_HOSTILE).nonzero()
+          marine_y, marine_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_SELF).nonzero()
           
+          if actions.FUNCTIONS.Attack_minimap.id in obs.observation.available_actions:
+            if(len(enemy_y > 0)):
+              self.destino = (enemy_x[0],enemy_y[0])
+              return actions.FUNCTIONS.Attack_minimap("now", self.destino)
+            else:
+              self.destino = (random.randint(5, 61),random.randint(5, 55))
+              return actions.FUNCTIONS.Attack_minimap("now", self.destino)
+        
+        if (self.estado == 1 and (self.destino[1] in range(marine_y.min()-2,marine_y.max()+2) ) and (self.destino[0] in range(marine_x.min()-2,marine_x.max()+2) )):
+          self.estado = 0
+          #input('Pause')
+
+        else:
+          return actions.FUNCTIONS.Attack_minimap("now", (self.destino[0],self.destino[1]))
+
         return actions.FUNCTIONS.no_op()
 
 def main(unused_argv):
