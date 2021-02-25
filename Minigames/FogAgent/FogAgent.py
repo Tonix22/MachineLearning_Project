@@ -42,13 +42,12 @@ class FogAgent(base_agent.BaseAgent):
             return actors
         else :
             return None
-
+      
     def step(self, obs):
         super(FogAgent, self).step(obs)
         vision = obs.observation["feature_minimap"][_VISIBILITY_MAP]
         pathable = obs.observation["feature_minimap"][9]
-        if(pathable[12][12]): #pathable[y][x]
-          print('se puede caminar')
+
         marine_y, marine_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_SELF).nonzero()
         if(self.capture == True):
             self.capture = False
@@ -68,11 +67,15 @@ class FogAgent(base_agent.BaseAgent):
               self.destino = (enemy_x[0],enemy_y[0])
               return actions.FUNCTIONS.Attack_minimap("now", self.destino)
             else:
-              self.destino = (random.randint(5, 61),random.randint(5, 55))
-              return actions.FUNCTIONS.Attack_minimap("now", self.destino)
+              #topleft(11,20)
+              #bottomright(53,54)
+              self.destino = (random.randint(5, 59),random.randint(5, 53))
+              while(pathable[self.destino[1]][self.destino[0]] == 0):
+                self.destino = (random.randint(5, 59),random.randint(5, 53))
+              print(self.destino)
+              return actions.FUNCTIONS.Attack_minimap("now", (self.destino[0],self.destino[1]))
         
-        self.destino = (min(self.destino[0],55), max(20,self.destino[1]))
-        #self.destino = (min(self.destino[0]+2,55), min(54,self.destino[1]+2))
+        #self.destino = (min(self.destino[0],55), max(20,self.destino[1]))
 
         if (self.estado == 1 and (self.destino[1] in range(marine_y.min()-2,marine_y.max()+2) ) and (min(self.destino[0],55) in range(marine_x.min()-2,marine_x.max()+2) )):
           self.estado = 0
