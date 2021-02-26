@@ -164,7 +164,7 @@ class FogAgent(base_agent.BaseAgent):
               self.destino = (min(53-1,self.destino[0]),min(54-1,self.destino[1]))
               self.destino = (random.randint(11+5, 30+5),random.randint(53-5, 54-5)) if self.destino[0] > 50 else self.destino
               marine_y, marine_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_SELF).nonzero()
-              coor = self.far.density(obs.observation["feature_minimap"][_VISIBILITY_MAP],(marine_x[0],marine_y[0]),20,2)
+              coor = self.far.density(obs.observation["feature_minimap"][_VISIBILITY_MAP],(marine_x[0],marine_y[0]),20,100)
               self.destino = (coor[1],coor[0])
               for i in self.far.valores:
                 print (i)
