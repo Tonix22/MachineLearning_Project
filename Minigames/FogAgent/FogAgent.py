@@ -23,23 +23,30 @@ class far():
   def inicializaMatriz(self):
     temp = list()
     for x in range(56): 
-      temp.append([(22+int(x/8)*5,14+(x%8)*5),0])
+      temp.append([(23+int(x/8)*5,15+(x%8)*5),0])
     return temp
 
-  def density(self,matriz,coor,distancia,densidad):
+  def density(self,matriz,coor,distancia,densidad,esquina):
+      
       imagen =[(-2,-2),(-2,-1),(-2,0),(-2,1),(-2,2),(-1,-2),(-1,-1),(-1,0),(-1,1),(-1,2),(0,-2),(0,-1),(0,0),(0,1),(0,2),(1,-2),(1,-1),(1,0),(1,1),(1,2),(2,-2),(2,-1),(2,0),(2,1),(2,2)]
       density = list()
-      point_a = np.array(coor)      
+      point_a = np.array(coor)
+      totalPeso = 0      
       for x in self.valores:
           point_b = np.array((x[0][1],x[0][0]))
           distance = np.linalg.norm(point_a - point_b) * distancia
           temp = 0
+          
           for y in imagen:
-              if (matriz[x[0][0]+y[0]][x[0][1]+y[1]]==0):
+              if (matriz[x[0][0]+y[0]][x[0][1]+y[1]]==0 and (x[0][0]+y[0])<52):
                 temp += 1
+                totalPeso += 1
           density.append(temp)
+          
           x[1] = temp * densidad + distance
       temp = self.valores[0]
+      if(totalPeso==0):
+        return (next(esquina))
       for node in self.valores:
         if (node[1]>temp[1]):
           temp=node
@@ -66,6 +73,7 @@ class FogAgent(base_agent.BaseAgent):
         self.map = MapMatrix(64,64)
         self.algo = MinMax()
         self.far = far()
+        self.corners = iter([(22,14),(22,52),(50,52),(50,14),(22,14),(22,52),(50,52),(50,14)])
 
     def get_fighters(self,obs,fighter_type):
         
@@ -164,7 +172,7 @@ class FogAgent(base_agent.BaseAgent):
               self.destino = (min(53-1,self.destino[0]),min(54-1,self.destino[1]))
               self.destino = (random.randint(11+5, 30+5),random.randint(53-5, 54-5)) if self.destino[0] > 50 else self.destino
               marine_y, marine_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_SELF).nonzero()
-              coor = self.far.density(obs.observation["feature_minimap"][_VISIBILITY_MAP],(marine_x[0],marine_y[0]),20,1000)
+              coor = self.far.density(obs.observation["feature_minimap"][_VISIBILITY_MAP],(marine_x[0],marine_y[0]),20,10000,self.corners)
               self.destino = (coor[1],coor[0])
               for i in self.far.valores:
                 print (i)
@@ -183,7 +191,7 @@ class FogAgent(base_agent.BaseAgent):
 
               return actions.FUNCTIONS.Attack_minimap("now", self.destino)
 
-        if (self.estado == 1 and (self.destino[1] in range(marine_y.min()-2,marine_y.max()+2) ) and (min(self.destino[0],55) in range(marine_x.min()-2,marine_x.max()+2) )):
+        if (self.estado == 1 and (self.destino[1] in range(marine_y.min()-3,marine_y.max()+3) ) and (min(self.destino[0],55) in range(marine_x.min()-3,marine_x.max()+3) )):
           self.estado = 0
           #input('Pause')
 
