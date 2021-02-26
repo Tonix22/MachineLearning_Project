@@ -9,12 +9,41 @@ from statistics import mean
 from matrix import MapMatrix
 from MinMax import *
 from params import *
+import numpy as np
 
 _PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
 _PLAYER_HOSTILE = 4
 _PLAYER_SELF    = features.PlayerRelative.SELF
 _PLAYER_NEUTRAL = features.PlayerRelative.NEUTRAL
 _VISIBILITY_MAP = features.SCREEN_FEATURES.visibility_map.index
+class far():
+  def __init__(self):
+    self.valores = self.inicializaMatriz()
+
+  def inicializaMatriz(self):
+    temp = list()
+    for x in range(56): 
+      temp.append([(22+int(x/8)*5,14+(x%8)*5),0])
+    return temp
+
+  def density(self,matriz,coor,distancia,densidad):
+      imagen =[(-2,-2),(-2,-1),(-2,0),(-2,1),(-2,2),(-1,-2),(-1,-1),(-1,0),(-1,1),(-1,2),(0,-2),(0,-1),(0,0),(0,1),(0,2),(1,-2),(1,-1),(1,0),(1,1),(1,2),(2,-2),(2,-1),(2,0),(2,1),(2,2)]
+      density = list()
+      point_a = np.array(coor)      
+      for x in self.valores:
+          point_b = np.array((x[0][1],x[0][0]))
+          distance = np.linalg.norm(point_a - point_b) * distancia
+          temp = 0
+          for y in imagen:
+              if (matriz[x[0][0]+y[0]][x[0][1]+y[1]]==0):
+                temp += 1
+          density.append(temp)
+          x[1] = temp * densidad + distance
+      temp = self.valores[0]
+      for node in self.valores:
+        if (node[1]>temp[1]):
+          temp=node
+      return temp[0]  
 
 def _xy_locs(mask):
   """Mask should be a set of bools from comparison with a feature layer."""
@@ -36,6 +65,7 @@ class FogAgent(base_agent.BaseAgent):
         self.killedZergs=0
         self.map = MapMatrix(64,64)
         self.algo = MinMax()
+        self.far = far()
 
     def get_fighters(self,obs,fighter_type):
         
@@ -132,7 +162,14 @@ class FogAgent(base_agent.BaseAgent):
               #topleft(11,20) #bottomright(53,54)
               self.destino = (max(11+1,self.destino[0]),max(20+1,self.destino[1]))
               self.destino = (min(53-1,self.destino[0]),min(54-1,self.destino[1]))
-              self.destino = (random.randint(11+5, 20+5),random.randint(53-5, 54-5)) if self.destino[0] > 50 else self.destino
+              self.destino = (random.randint(11+5, 30+5),random.randint(53-5, 54-5)) if self.destino[0] > 50 else self.destino
+              marine_y, marine_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_SELF).nonzero()
+              coor = self.far.density(obs.observation["feature_minimap"][_VISIBILITY_MAP],(marine_x[0],marine_y[0]),20,2)
+              self.destino = (coor[1],coor[0])
+              for i in self.far.valores:
+                print (i)
+              print((coor[1],coor[0]))
+              #input('Pause')
 
               #error = 0
               #Random position
