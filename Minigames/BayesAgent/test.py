@@ -6,6 +6,7 @@ from absl import app
 from pysc2.agents import base_agent
 from pysc2.lib import actions, features, units
 from pysc2.env import sc2_env, run_loop
+import math
 
 class QLearningTable:
   def __init__(self, actions, learning_rate=0.01, reward_decay=0.9):
@@ -121,6 +122,37 @@ class Agent(base_agent.BaseAgent):
       return actions.RAW_FUNCTIONS.Build_SupplyDepot_pt(
           "now", scv.tag, supply_depot_xy)
     return actions.RAW_FUNCTIONS.no_op()
+   
+  def build_refinery(self, obs):
+    vespene = [unit for unit in obs.observation.raw_units 
+            if unit.unit_type == units.Neutral.VespeneGeyser]
+    ##
+    #closest to command center
+    cmdCenter = [unit for unit in obs.observation.raw_units
+            if unit.unit_type == units.Terran.CommandCenter 
+            and unit.alliance == features.PlayerRelative.SELF]
+    #list of positions
+    vespeneDist = list()
+    for i in range(len(vespene)):
+      d=math.sqrt(((vespene[i].x - cmdCenter[0].x)**2 + ((vespene[i].y -  cmdCenter[0].y)**2)))
+      vespeneDist.append(d)
+    #from list, get the index of smallest value
+    minDistIndex= np.argmin(vespeneDist) #index of min value
+    vespene = vespene[minDistIndex]
+    ##
+
+    #vespene = vespene[0]
+
+    refinerys = self.get_my_units_by_type(obs, units.Terran.Refinery)
+    scvs = self.get_my_units_by_type(obs, units.Terran.SCV)
+    if (len(refinerys) == 0 and obs.observation.player.minerals >= 100 and
+        len(scvs) > 0):
+      refinery_xy = (vespene.x, vespene.y)
+      distances = self.get_distances(obs, scvs, refinery_xy)
+      scv = scvs[np.argmin(distances)]
+      return actions.RAW_FUNCTIONS.Build_Refinery_pt(
+          "now", scv.tag, vespene.tag) #vespene[29]
+    return actions.RAW_FUNCTIONS.no_op()
     
   def build_barracks(self, obs):
     completed_supply_depots = self.get_my_completed_units_by_type(
@@ -131,7 +163,7 @@ class Agent(base_agent.BaseAgent):
         obs.observation.player.minerals >= 150 and len(scvs) > 0):
       barracks_xy = (22, 21) if self.base_top_left else (35, 45)
       distances = self.get_distances(obs, scvs, barracks_xy)
-      scv = scvs[np.argmin(distances)]
+      scv = scvs[3]
       return actions.RAW_FUNCTIONS.Build_Barracks_pt(
           "now", scv.tag, barracks_xy)
     return actions.RAW_FUNCTIONS.no_op()
@@ -146,6 +178,18 @@ class Agent(base_agent.BaseAgent):
       barracks = self.get_my_units_by_type(obs, units.Terran.Barracks)[0]
       if barracks.order_length < 5:
         return actions.RAW_FUNCTIONS.Train_Marine_quick("now", barracks.tag)
+    return actions.RAW_FUNCTIONS.no_op()
+
+  def train_reaper(self, obs):
+    completed_barrackses = self.get_my_completed_units_by_type(
+        obs, units.Terran.Barracks)
+    free_supply = (obs.observation.player.food_cap - 
+                   obs.observation.player.food_used)
+    if (len(completed_barrackses) > 0 and obs.observation.player.minerals >= 100
+        and free_supply > 0 and obs.observation.player.vespene >=50):
+      barracks = self.get_my_units_by_type(obs, units.Terran.Barracks)[0]
+      if barracks.order_length < 5:
+        return actions.RAW_FUNCTIONS.Train_Reaper_quick("now", barracks.tag)
     return actions.RAW_FUNCTIONS.no_op()
   
   def attack(self, obs):
@@ -218,7 +262,7 @@ class SmartAgent(Agent):
     enemy_marines = self.get_enemy_units_by_type(obs, units.Terran.Marine) #MArines enemigos.
     
     return (len(command_centers),
-            len(scvs),
+            len(scvs), 
             len(idle_scvs),
             len(supply_depots),
             len(completed_supply_depots),
