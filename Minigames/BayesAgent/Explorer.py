@@ -10,19 +10,7 @@ class Explorer():
                                 ('exploredRight', 'walk')])
 
 
-        self.eUp_cpd    = TabularCPD(variable = 'exploredUp', 
-                                    variable_card = 2, 
-                                    values = [[0.5], [0.5]])
-        self.eDown_cpd  = TabularCPD(variable = 'exploredDown', 
-                                    variable_card = 2, 
-                                    values = [[0.5], [0.5]])
-        self.eLeft_cpd  = TabularCPD(variable = 'exploredLeft', 
-                                    variable_card = 2, 
-                                    values = [[0.5], [0.5]])
-        self.eRight_cpd = TabularCPD(variable = 'exploredRight',
-                                    variable_card = 2, 
-                                    values = [[0.5], [0.5]])
-
+        
         self.walk_cpd   = TabularCPD(variable = 'walk', 
                                     variable_card = 4,
         #explored Right     #                   y                   |                    n
@@ -35,6 +23,18 @@ class Explorer():
                          [0.25, 1, 0, 0.5, 0, 0.5, 0, 0.33, 0, 0.5, 0,   0.34, 0.5, 0.5, 0,    0.25]],#walk Up
                        evidence=['exploredRight', 'exploredLeft', 'exploredDown', 'exploredUp'],
                        evidence_card=[2, 2, 2, 2])
+        self.eUp_cpd    = TabularCPD(variable = 'exploredUp',
+                                    variable_card = 2, 
+                                    values = [[0.5], [0.5]])
+        self.eDown_cpd  = TabularCPD(variable = 'exploredDown', 
+                                    variable_card = 2, 
+                                    values = [[0.5], [0.5]])
+        self.eLeft_cpd  = TabularCPD(variable = 'exploredLeft', 
+                                    variable_card = 2, 
+                                    values = [[0.5], [0.5]])
+        self.eRight_cpd = TabularCPD(variable = 'exploredRight',
+                                    variable_card = 2, 
+                                    values = [[0.5], [0.5]])
 
         self.G.add_cpds(self.eUp_cpd, 
                         self.eDown_cpd, 
@@ -45,9 +45,21 @@ class Explorer():
         self.G.check_model()
 
 
+    def belief_desition(self):
+
         bp  = BeliefPropagation(self.G)
-        res = bp.query(variables=["walk"], evidence={'exploredDown':0})
-        print (res)
+        print(self.eUp_cpd)
+        print(self.eDown_cpd)
+        print(self.eLeft_cpd)
+        print(self.eRight_cpd)
+        print("*****************")
+        res = bp.query(variables=["walk"], evidence={'exploredDown':1,'exploredLeft':0,'exploredUp':0,'exploredRight':0})
+        
+        print (type(res))
+        #print(self.G)
+    def setCPD(self,val):
+        self.eDown_cpd.set_value()
 
 var = Explorer()
+var.belief_desition()
         
