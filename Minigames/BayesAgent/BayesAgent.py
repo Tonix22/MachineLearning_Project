@@ -40,7 +40,10 @@ class BayesAgent(base_agent.BaseAgent):
         self.capture = True
         self.state = state.FTS #First Time Setup
         self.supply_location = (50,50)
- 
+        self.barraca_location = (70,50)
+        self.left_to_right = False
+
+
     def scv_avg(self,obs):
         scv_y, scv_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_SELF).nonzero()
         scv_y = scv_y.mean()
@@ -79,13 +82,15 @@ class BayesAgent(base_agent.BaseAgent):
 
         orientation_x = cmd_center.x - avg_minerals_x
         
-        left_to_right = (orientation_x > 0)
+        self.left_to_right = (orientation_x > 0)
 
-        if(left_to_right == True):
+        if(self.left_to_right == True):
           #self.supply_location = (cmd_center.x,cmd_center.y) # Assignar una cordenada al supply depot
           self.supply_location = (65,40)
+          self.barraca_location = (70,50)
         else: #right_to_left
           self.supply_location = (15,30)
+          self.barraca_location = (15,15)
          # self.supply_location = (cmd_center.x-10,cmd_center.y-10) # Assignar una cordenada al supply depot
 
 
@@ -109,7 +114,7 @@ class BayesAgent(base_agent.BaseAgent):
         if(self.state ==  state.IDLE):# Polling
           if actions.FUNCTIONS.Build_Barracks_screen.id in obs.observation.available_actions:
             self.state = state.BUILD_BARRACA
-            return actions.FUNCTIONS.Build_Barracks_screen("now", (50,50))
+            return actions.FUNCTIONS.Build_Barracks_screen("now", self.barraca_location)
 
 
         return actions.FUNCTIONS.no_op()
