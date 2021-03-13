@@ -25,15 +25,15 @@ class Explorer():
 
         self.walk_cpd   = TabularCPD(variable = 'walk', 
                                     variable_card = 4,
-        #exploredUp     #                   y                   |                    n
-        #exploredDown   #         y                 n           |         y                 n           
-        #exploredLeft   #   y         n     |    y         n    |    y         n     |    y         n   
-        #exploredRight  # y    n    y    n     y    n   y    n    y    n     y    n   y    n     y    n
-               values = [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1], #walk up
-                        [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1], #walk down
-                        [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1], #walk left
-                        [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7]], #walk right
-                       evidence=['exploredUp', 'exploredDown', 'exploredLeft', 'exploredRight'],
+        #explored Right     #                   y                   |                    n
+        #explored Left   #         y                 n           |         y                 n           
+        #explored Down   #   y         n     |    y         n    |    y         n     |    y         n   
+        #explored Up  # y    n    y    n     y    n   y    n    y    n     y    n   y    n     y    n
+               values = [[0.25, 0, 0, 0,   0, 0,   1, 0,    1, 0.5, 0,   0.33, 0,   0,   0.33, 0.25], #walk Right
+                         [0.25, 0, 0, 0,   1, 0.5, 0, 0.34, 0, 0,   0.5, 0,    0,   0.5, 0.33, 0.25], #walk Left
+                         [0.25, 0, 1, 0.5, 0, 0,   0, 0.33, 0, 0,   0.5, 0.33, 0.5, 0,   0.34, 0.25], #walk Down
+                         [0.25, 1, 0, 0.5, 0, 0.5, 0, 0.33, 0, 0.5, 0,   0.34, 0.5, 0.5, 0,    0.25]],#walk Up
+                       evidence=['exploredRight', 'exploredLeft', 'exploredDown', 'exploredUp'],
                        evidence_card=[2, 2, 2, 2])
 
         self.G.add_cpds(self.eUp_cpd, 
@@ -46,7 +46,7 @@ class Explorer():
 
 
         bp  = BeliefPropagation(self.G)
-        res = bp.query(variables=["walk"], evidence={'exploredRight':1})
+        res = bp.query(variables=["walk"], evidence={'exploredDown':0})
         print (res)
 
 var = Explorer()
