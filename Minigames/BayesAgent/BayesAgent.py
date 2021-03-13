@@ -26,6 +26,8 @@ class state(Enum):
     WAIT_MINERALS      = 2
     BUILD_SUPPLY_DEPOT = 3
     BUILD_BARRACA      = 4
+    WAIT_BARRACK_BUILD = 5
+    TRAIN_MARRINE      = 6
     
 
 def _xy_locs(mask):
@@ -107,14 +109,28 @@ class BayesAgent(base_agent.BaseAgent):
             self.state = state.BUILD_SUPPLY_DEPOT
 
         elif(self.state == state.BUILD_SUPPLY_DEPOT):# Build Suplly Depot
-          self.state = state.IDLE
+          self.state = state.BUILD_BARRACA
           self.Select_side(obs)
           return actions.FUNCTIONS.Build_SupplyDepot_screen("now", self.supply_location)
         
-        if(self.state ==  state.IDLE):# Polling
+        elif(self.state ==  state.BUILD_BARRACA):
           if actions.FUNCTIONS.Build_Barracks_screen.id in obs.observation.available_actions:
-            self.state = state.BUILD_BARRACA
+            self.state = state.WAIT_BARRACK_BUILD
             return actions.FUNCTIONS.Build_Barracks_screen("now", self.barraca_location)
+
+        elif(self.state ==  state.WAIT_BARRACK_BUILD):
+          Barracks = [unit for unit in obs.observation.feature_units 
+                        if unit.unit_type == units.Terran.Barracks]
+          if len(Barracks) > 0 :
+            if(Barracks[0][7] > 255):
+              print(Barracks)
+              self.state = state.TRAIN_MARRINE
+
+        elif(self.state ==  state.TRAIN_MARRINE):
+          self.state = state.IDLE
+          return actions.FUNCTIONS.Train_Marine_quick("now", Barracks)
+          
+     
 
 
         return actions.FUNCTIONS.no_op()
