@@ -54,6 +54,12 @@ class Agent(base_agent.BaseAgent):
             if unit.unit_type == unit_type 
             and unit.alliance == features.PlayerRelative.SELF]
   
+  def is_my_unit_tag_alive(self,obs, unit_tag): #retorna true si el tag aún existe y false en caso contrario
+    tag = [unit for unit in obs.observation.raw_units
+          if unit.tag == tag
+          and unit.alliance == features.PlayerRelative.SELF]
+    return len(tag)==1
+
   def get_enemy_units_by_type(self, obs, unit_type): #retorna un arreglo de las unidades solicitadas que son Enemigas aún y cuando se encuentran en producción
     return [unit for unit in obs.observation.raw_units
             if unit.unit_type == unit_type 

@@ -33,7 +33,8 @@ class state(Enum):
     BUILD_MARINE       = 6
     BUILD_EXPLORADOR   = 7
     WAIT_BUILD         = 8
-    EXPLORE            = 9
+    SELECT_EXPLORER    = 9
+    EXPLORE            = 10
 
 class Observed(IntEnum):
   COMMAND_CENTERS = 0
@@ -70,6 +71,9 @@ class BayesAgent(Agent):
         self.barraca_location = (70,50)
         self.left_to_right = False
         self.bayes = Explorer()
+        self.comancenter_enemy = 0
+        self.explorer_tag = 0
+        self.one_refinery = False
 
     def get_state(self, obs):
         scvs = self.get_my_units_by_type(obs, units.Terran.SCV) # Selección de de todos los robots utilizando la funsión por tipo
@@ -180,12 +184,19 @@ class BayesAgent(Agent):
 
           if (estado[Observed.IDLE_SCVS]):
             self.state = state.BUILD_VESPENE
+            return actions.FUNCTIONS.no_op()
         
         elif(self.state == state.BUILD_VESPENE):# Polling
-          if (estado[Observed.REFINERIES]==0):
+          
+          if (estado[Observed.REFINERIES] == 0 and 
+              self.one_refinery == False):
+            
+            self.one_refinery = True
             return self.build_refinery(obs)
+            
           if (estado[Observed.REFINERIES]>=1):
             self.state = state.BUILD_BARRACA
+            return actions.FUNCTIONS.no_op()
 
         elif(self.state == state.BUILD_BARRACA):# Polling
           if (estado[Observed.BARRACKSES]==0 and 
@@ -193,20 +204,24 @@ class BayesAgent(Agent):
             self.state = state.BUILD_EXPLORADOR
             return self.build_barracks(obs)
           
-        
-
         elif(self.state == state.BUILD_EXPLORADOR):
           if (estado[Observed.IDLE_SCVS] >= 1):
             return self.harvest_minerals(obs)
         
           if(estado[Observed.COMPLETED_BARRACKSES] >= 1 and 
-               estado[Observed.CAN_AFFORD_REAPER]
-               ):
+             estado[Observed.CAN_AFFORD_REAPER]):
             self.state = state.EXPLORE
             return self.train_reaper(obs)
+        
+        elif(self.state == state.SELECT_EXPLORER):
+            if(estado[Observed.REAPER] == 1):
+              reaper = self.get_my_completed_units_by_type(obs, units.Terran.Reaper)
+              #marine_y, marine_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_SELF).nonzero()
+              reaper = reaper[0]
+              self.explorer_tag = reaper.tag
+              self.state = state.EXPLORE
 
-            
-
+          
         elif(self.state == state.EXPLORE):
           
           if(estado[Observed.REAPER] == 1):
@@ -216,24 +231,24 @@ class BayesAgent(Agent):
             #marine_y, marine_x = (obs.observation["feature_minimap"][_PLAYER_RELATIVE] == _PLAYER_SELF).nonzero()
             marine = marine[0]
             
+            destino = (marine.x,marine.y)
+
             if(marine.order_length == 0):
               vision   = obs.observation["feature_minimap"][_VISIBILITY_MAP]
               pathable = obs.observation["feature_minimap"][9]
               possibleDirections = self.bayes.returnBeliefDestination(marine,vision,pathable) 
               
               if(possibleDirections == Directions.Right):
-                destino = (marine.x+2, marine.y) 
+                destino = (marine.x+5, marine.y) 
 
               elif(possibleDirections == Directions.Left):
-                destino = (marine.x-2, marine.y) 
+                destino = (marine.x-5, marine.y) 
 
               elif(possibleDirections == Directions.Down):
-                destino = (marine.x, marine.y-2) 
+                destino = (marine.x, marine.y-5) 
 
               elif(possibleDirections == Directions.Up):
-                destino = (marine.x, marine.y+2) 
-              else:
-                destino = (marine.x,marine.y)
+                destino = (marine.x, marine.y+5)                 
 
             return actions.RAW_FUNCTIONS.Attack_pt(
             "now", marine.tag, destino)
@@ -260,7 +275,7 @@ def main(unused_argv):
             feature_dimensions=features.Dimensions(screen=84, minimap=64),
             use_feature_units=True
         ),
-        step_mul=48,
+        step_mul=10,
         disable_fog=False,
         visualize=True #visualize: Whether to pop up a window showing the camera and feature layers. This won't work without access to a window manager.
     ) as env:

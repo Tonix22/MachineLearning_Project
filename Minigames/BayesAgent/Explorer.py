@@ -22,13 +22,13 @@ class Explorer():
         self.walk_cpd   = TabularCPD(variable = 'walk', 
                                     variable_card = 4,
         #explored Right     #                   y                   |                    n
-        #explored Left   #         y                 n           |         y                 n           
-        #explored Down   #   y         n     |    y         n    |    y         n     |    y         n   
-        #explored Up  # y    n    y    n     y    n   y    n    y    n     y    n   y    n     y    n
-               values = [[0.25, 0, 0, 0,   0, 0,   1, 0,    1, 0.5, 0,   0.33, 0,   0,   0.33, 0.25], #walk Right
-                         [0.25, 0, 0, 0,   1, 0.5, 0, 0.34, 0, 0,   0.5, 0,    0,   0.5, 0.33, 0.25], #walk Left
-                         [0.25, 0, 1, 0.5, 0, 0,   0, 0.33, 0, 0,   0.5, 0.33, 0.5, 0,   0.34, 0.25], #walk Down
-                         [0.25, 1, 0, 0.5, 0, 0.5, 0, 0.33, 0, 0.5, 0,   0.34, 0.5, 0.5, 0,    0.25]],#walk Up
+        #explored Left   #         y                    n           |         y                 n           
+        #explored Down   #     y         n     |    y          n    |    y         n     |    y         n   
+        #explored Up  #     y    n     y    n     y    n     y    n    y     n     y    n   y    n     y    n
+               values = [[0.25, 0.33, 0.33, 0.5, 0.33, 0.5, 0,    1,   0,    0,   0.5,  0, 0.5,  0.5,  0, 0.25], #walk Right
+                         [0.25, 0.33, 0.33, 0.5, 0,    0,   0.33, 0,   0.33, 0.5, 0,    1, 0.5,  0,    0, 0.25], #walk Left
+                         [0.25, 0.34, 0,    0,   0.33, 0.5, 0.33, 0,   0.33, 0.5, 0,    0, 0,    0.5,  0, 0.25], #walk Down
+                         [0.25, 0,    0.34, 0,   0.34, 0,   0.34, 0,   0.34, 0,   0.5,  0, 0,    0,    1, 0.25]],#walk Up
                        evidence=['exploredRight', 'exploredLeft', 'exploredDown', 'exploredUp'],
                        evidence_card=[2, 2, 2, 2])
         self.eUp_cpd    = TabularCPD(variable = 'exploredUp',
@@ -53,7 +53,7 @@ class Explorer():
         self.G.check_model()
 
     def belief_destination(self,percentageVals): 
-        vals = self.percentageMinOnly(percentageVals) #receiving a percentage, transforms to 0 and 1s
+        vals = self.percentageFlooredOnly(percentageVals) #receiving a percentage, transforms to 0 and 1s
         #Doesn't change the original values of CPD
         bp  = BeliefPropagation(self.G)
         r,l,u,d = vals
@@ -74,9 +74,10 @@ class Explorer():
         action = np.random.choice(listaConMaximos)
         return action
 
-    def returnBeliefDestination(self, pos, exploredMap, pathableMap): #!!!!!!!!ESTE ES EL QUE SE DEBE LLAMAR
-        size = (len(pathableMap[0]),len(pathableMap))
-        exploredVals       =  self.checkExploredAreas_v0(pos, exploredMap, pathableMap, size) #regresa tupla de porcentajes 
+    def returnBeliefDestination(self, pos, exploredMap, pathableMap): #!!!!!!!!ESTE SE LLAMA DESDE EL AGENTE
+        size               = (len(pathableMap[0]),len(pathableMap))
+        exploredVals       = self.checkExploredAreas_v0(pos, exploredMap, pathableMap, size) #regresa tupla de porcentajes 
+        exploredVals       = self.floorIfNotPathable(pos, pathableMap, exploredVals)
         possibleDirections = self.belief_destination(exploredVals) #regresa tupla del resultado del belief destination
         return self.choose_beliefdestination(possibleDirections)
 
@@ -118,13 +119,28 @@ class Explorer():
 
         #print((percentageRight, percentageLeft, percentageDown, percentageUp))
         return percentageRight, percentageLeft, percentageDown, percentageUp
+    def floorIfNotPathable(self, pos, pathableMap, exploredT):
+        xPos=pos[0]
+        yPos=pos[1]
+        dis=1
+        exploredList=list(exploredT)
+        #(right,left,down,up) puts a 1 if not pathable immediately, to force another
+        if pathableMap[yPos][xPos+dis] == 0: #right
+            exploredList[0]=1
+        if pathableMap[yPos][xPos-dis] == 0: #left
+            exploredList[1]=1
+        if pathableMap[yPos-dis][xPos] == 0: #down
+            exploredList[2]=1
+        if pathableMap[yPos+dis][xPos] == 0: #up
+            exploredList[3]=1
+        return tuple(exploredList)
 
-    def percentageMinOnly(self, explored):
+    def percentageFlooredOnly(self, explored):
         exploredVals    = list(explored)
-        exploredMinVal  = np.min(exploredVals)
+        exploredVal  = np.max(exploredVals)
         for v in range(len(exploredVals)):
-            exploredVals[v] = 0 if exploredVals[v]==exploredMinVal else 1
-            #las areas con menor exploracion tendrán 1 (son elegibles)
+            exploredVals[v] = 1 if exploredVals[v]==exploredVal else 0
+            #max perecentages will be 1
         print(exploredVals)
         return exploredVals
 ''' EJEMPLO
