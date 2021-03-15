@@ -3,6 +3,8 @@ from pgmpy.factors.discrete import TabularCPD
 from pgmpy.inference import BeliefPropagation
 import numpy as np
 from enum import IntEnum
+import sys
+from Params import *
 
 class Directions(IntEnum):
     Right = 0
@@ -52,8 +54,8 @@ class Explorer():
 
         self.G.check_model()
 
-    def belief_destination(self,percentageVals): 
-        vals = self.percentageFlooredOnly(percentageVals) #receiving a percentage, transforms to 0 and 1s
+    def belief_destination(self,vals): 
+        
         #Doesn't change the original values of CPD
         bp  = BeliefPropagation(self.G)
         r,l,u,d = vals
@@ -74,11 +76,11 @@ class Explorer():
         action = np.random.choice(listaConMaximos)
         return action
 
-    def returnBeliefDestination(self, pos, exploredMap, pathableMap): #!!!!!!!!ESTE SE LLAMA DESDE EL AGENTE
-        size               = (len(pathableMap[0]),len(pathableMap))
-        exploredVals       = self.checkExploredAreas_v0(pos, exploredMap, pathableMap, size) #regresa tupla de porcentajes 
-        exploredVals       = self.floorIfNotPathable(pos, pathableMap, exploredVals)
-        possibleDirections = self.belief_destination(exploredVals) #regresa tupla del resultado del belief destination
+    def returnBeliefDestination(self, pos, exploredMap, pathableMap, mesh): #!!!!!!!!ESTE SE LLAMA DESDE EL AGENTE
+        #size               = (len(pathableMap[0]),len(pathableMap))
+        exploredVals       = self.checkExploredAreas_v1(pos, exploredMap, pathableMap, mesh) #regresa tupla de porcentajes 
+        vals = self.percentageFlooredOnly(exploredVals) #receiving a percentage, transforms to 0 and 1s
+        possibleDirections = self.belief_destination(vals) #regresa tupla del resultado del belief destination
         return self.choose_beliefdestination(possibleDirections)
 
     def setExploredCPD(self,right,left,down,up): #no estoy segura aun de este
@@ -105,42 +107,74 @@ class Explorer():
                     if exploredM[y][x] !=0: # 1 is seen previously, 2 is seen now
                         PixelsExplored  += 1 
         return PixelsExplored,PixelsTotal
-        
+    
     def checkExploredAreas_v0(self, pos, exploredMap, pathableMap, size):   #tupla x,y  & arrays 2D 
         PixelsExploredRight, PixelsRightTotal   = self.calculateExplorationToSide(right=True, characterPos=pos, exploredM=exploredMap, pathableM=pathableMap, mapSize=size)
         PixelsExploredLeft, PixelsLeftTotal     = self.calculateExplorationToSide(left=True, characterPos=pos, exploredM=exploredMap, pathableM=pathableMap, mapSize=size)
         PixelsExploredDown, PixelsDownTotal     = self.calculateExplorationToSide(down=True, characterPos=pos, exploredM=exploredMap, pathableM=pathableMap, mapSize=size)
         PixelsExploredUp, PixelsUpTotal         = self.calculateExplorationToSide(up=True, characterPos=pos, exploredM=exploredMap, pathableM=pathableMap, mapSize=size)
 
-        percentageRight = PixelsExploredRight / PixelsRightTotal    if PixelsRightTotal>0 else 0
-        percentageLeft = PixelsExploredLeft / PixelsLeftTotal       if PixelsLeftTotal>0 else 0
-        percentageDown = PixelsExploredDown / PixelsDownTotal       if PixelsDownTotal>0 else 0
-        percentageUp = PixelsExploredUp / PixelsUpTotal             if PixelsUpTotal>0 else 0
+        percentageRight = PixelsExploredRight / PixelsRightTotal    if PixelsRightTotal>0 else 1
+        percentageLeft = PixelsExploredLeft / PixelsLeftTotal       if PixelsLeftTotal>0 else 1
+        percentageDown = PixelsExploredDown / PixelsDownTotal       if PixelsDownTotal>0 else 1
+        percentageUp = PixelsExploredUp / PixelsUpTotal             if PixelsUpTotal>0 else 1
 
         #print((percentageRight, percentageLeft, percentageDown, percentageUp))
         return percentageRight, percentageLeft, percentageDown, percentageUp
-    def floorIfNotPathable(self, pos, pathableMap, exploredT):
-        xPos=pos[0]
-        yPos=pos[1]
-        dis=1
-        exploredList=list(exploredT)
-        #(right,left,down,up) puts a 1 if not pathable immediately, to force another
-        if pathableMap[yPos][xPos+dis] == 0: #right
-            exploredList[0]=1
-        if pathableMap[yPos][xPos-dis] == 0: #left
-            exploredList[1]=1
-        if pathableMap[yPos-dis][xPos] == 0: #down
-            exploredList[2]=1
-        if pathableMap[yPos+dis][xPos] == 0: #up
-            exploredList[3]=1
-        return tuple(exploredList)
+
+    def ExplorationPercentageQuadrant(self,pathableM,exploredM,node,xsize,ysize):
+        
+        if(node!=None):
+            node.cord = (node.cord[0]//xsize,node.cord[1]//ysize)
+            
+            xMin = node.cord[0]*xsize 
+            xMax = (node.cord[0]+1)*xsize
+            yMin = node.cord[1]*ysize
+            yMax = (node.cord[1]+1)*ysize
+            PixelsExplored = 0  #pathable and NOT unexplored
+            PixelsTotal    = 0  #pathable
+            for y in range (int(yMin), int(yMax)):
+                for x in range (int(xMin), int(xMax)):
+                    if pathableM[y][x] == 1:
+                        PixelsTotal         += 1  
+                        if exploredM[y][x] !=0: #if 1 or 2 : 1 is seen previously, 2 is seen now
+                            PixelsExplored  += 1 
+            percentageExplored = PixelsExplored / PixelsTotal    if PixelsTotal>0 else 1
+            return percentageExplored
+        else:
+            return 1
+
+    def checkExploredAreas_v1(self, pos, exploredMap, pathableMap, mesh):   #tupla x,y  & arrays 2D 
+        
+        #relative_quadrant = mesh.Get_relative_cord(pos[0],pos[1]) #return cuadrante relativo // 
+        quadrant_obj      = mesh.Grid[pos[0]][pos[1]]
+        
+        #Metodo que depende de la coordenada del cuadrante
+        #quadrantR = (0,0)+(1,0)#ejemplo del cuadrante a la derecha
+        #returns a percentage float
+      
+        percentageRight = self.ExplorationPercentageQuadrant(pathableMap,exploredMap,quadrant_obj.Neighbors['UP'],   
+                                                                (64/mesh.col_size),(64/mesh.row_size))
+
+        percentageLeft  = self.ExplorationPercentageQuadrant(pathableMap,exploredMap,quadrant_obj.Neighbors['RIGHT'],
+                                                               (64/mesh.col_size),(64/mesh.row_size))
+            
+ 
+        percentageDown  = self.ExplorationPercentageQuadrant(pathableMap,exploredMap,quadrant_obj.Neighbors['DOWN'], 
+                                                                (64/mesh.col_size),(64/mesh.row_size))
+        
+        percentageUp    = self.ExplorationPercentageQuadrant(pathableMap,exploredMap,quadrant_obj.Neighbors['LEFT'], 
+                                                                (64/mesh.col_size),(64/mesh.row_size))
+        
+        return percentageRight, percentageLeft, percentageDown, percentageUp
+
 
     def percentageFlooredOnly(self, explored):
         exploredVals    = list(explored)
         exploredVal  = np.max(exploredVals)
         for v in range(len(exploredVals)):
             exploredVals[v] = 1 if exploredVals[v]==exploredVal else 0
-            #max perecentages will be 1
+            #max percentages will be 1, rest 0
         print(exploredVals)
         return exploredVals
 ''' EJEMPLO

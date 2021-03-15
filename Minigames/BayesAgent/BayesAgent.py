@@ -9,13 +9,14 @@ from absl import app
 import time
 import math
 from statistics import mean 
-from params import *
+from Params import *
 import numpy as np
 from enum import Enum
 from enum import IntEnum
 from statistics import mean 
 from test import *
 from Explorer import *
+from Mesh import *
 
 _PLAYER_RELATIVE = features.SCREEN_FEATURES.player_relative.index
 _PLAYER_HOSTILE = 4
@@ -74,6 +75,12 @@ class BayesAgent(Agent):
         self.comancenter_enemy = 0
         self.explorer_tag = 0
         self.one_refinery = False
+        self.Mesh = Mesh(ROW,COL)
+        
+        # self.Mesh.Place_character(x,y)
+        # self.Mesh.Get_relative_cord(x,y)
+
+        # marine in mesh = self.Mesh.Place_character(soldier[0],soldier[1])
 
     def get_state(self, obs):
         scvs = self.get_my_units_by_type(obs, units.Terran.SCV) # Selección de de todos los robots utilizando la funsión por tipo
@@ -232,23 +239,30 @@ class BayesAgent(Agent):
             marine = marine[0]
             
             destino = (marine.x,marine.y)
+            temp    = self.Mesh.Get_relative_cord(marine.x,marine.y)
+            if(temp !=None):
+              marine.x = temp[0]
+              marine.y = temp[1]
 
             if(marine.order_length == 0):
               vision   = obs.observation["feature_minimap"][_VISIBILITY_MAP]
               pathable = obs.observation["feature_minimap"][9]
-              possibleDirections = self.bayes.returnBeliefDestination(marine,vision,pathable) 
               
+              possibleDirections = self.bayes.returnBeliefDestination((marine.x,marine.y),vision,pathable,self.Mesh) 
+              
+              quadrant_obj = self.Mesh.Grid[marine.x][marine.y]
+
               if(possibleDirections == Directions.Right):
-                destino = (marine.x+5, marine.y) 
+                destino = (quadrant_obj.Neighbors['RIGHT'].cord[0], quadrant_obj.Neighbors['RIGHT'].cord[1]) 
 
               elif(possibleDirections == Directions.Left):
-                destino = (marine.x-5, marine.y) 
+                destino = (quadrant_obj.Neighbors['LEFT'].cord[0], quadrant_obj.Neighbors['LEFT'].cord[1])
 
               elif(possibleDirections == Directions.Down):
-                destino = (marine.x, marine.y-5) 
+                destino = (quadrant_obj.Neighbors['DOWN'].cord[0], quadrant_obj.Neighbors['DOWN'].cord[1])
 
               elif(possibleDirections == Directions.Up):
-                destino = (marine.x, marine.y+5)                 
+                destino = (quadrant_obj.Neighbors['UP'].cord[0], quadrant_obj.Neighbors['UP'].cord[1])              
 
             return actions.RAW_FUNCTIONS.Attack_pt(
             "now", marine.tag, destino)

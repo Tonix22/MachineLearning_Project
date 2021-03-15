@@ -56,7 +56,7 @@ class Agent(base_agent.BaseAgent):
   
   def is_my_unit_tag_alive(self,obs, unit_tag): #retorna true si el tag aún existe y false en caso contrario
     tag = [unit for unit in obs.observation.raw_units
-          if unit.tag == tag
+          if unit.tag == unit_tag
           and unit.alliance == features.PlayerRelative.SELF]
     return len(tag)==1
 
