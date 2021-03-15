@@ -115,10 +115,10 @@ class Explorer():
         PixelsExploredDown, PixelsDownTotal     = self.calculateExplorationToSide(down=True, characterPos=pos, exploredM=exploredMap, pathableM=pathableMap, mapSize=size)
         PixelsExploredUp, PixelsUpTotal         = self.calculateExplorationToSide(up=True, characterPos=pos, exploredM=exploredMap, pathableM=pathableMap, mapSize=size)
 
-        percentageRight = PixelsExploredRight / PixelsRightTotal    if PixelsRightTotal>0 else 0
-        percentageLeft = PixelsExploredLeft / PixelsLeftTotal       if PixelsLeftTotal>0 else 0
-        percentageDown = PixelsExploredDown / PixelsDownTotal       if PixelsDownTotal>0 else 0
-        percentageUp = PixelsExploredUp / PixelsUpTotal             if PixelsUpTotal>0 else 0
+        percentageRight = PixelsExploredRight / PixelsRightTotal    if PixelsRightTotal>0 else 1
+        percentageLeft = PixelsExploredLeft / PixelsLeftTotal       if PixelsLeftTotal>0 else 1
+        percentageDown = PixelsExploredDown / PixelsDownTotal       if PixelsDownTotal>0 else 1
+        percentageUp = PixelsExploredUp / PixelsUpTotal             if PixelsUpTotal>0 else 1
 
         #print((percentageRight, percentageLeft, percentageDown, percentageUp))
         return percentageRight, percentageLeft, percentageDown, percentageUp

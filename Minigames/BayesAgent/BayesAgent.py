@@ -240,16 +240,16 @@ class BayesAgent(Agent):
               possibleDirections = self.bayes.returnBeliefDestination((marine.x,marine.y),vision,pathable) 
               
               if(possibleDirections == Directions.Right):
-                destino = (marine.x+10, marine.y) 
+                destino = (marine.x+5, marine.y) 
 
               elif(possibleDirections == Directions.Left):
-                destino = (marine.x-10, marine.y) 
+                destino = (marine.x-5, marine.y) 
 
               elif(possibleDirections == Directions.Down):
-                destino = (marine.x, marine.y-10) 
+                destino = (marine.x, marine.y-5) 
 
               elif(possibleDirections == Directions.Up):
-                destino = (marine.x, marine.y+10)                 
+                destino = (marine.x, marine.y+5)                 
 
             return actions.RAW_FUNCTIONS.Attack_pt(
             "now", marine.tag, destino)
