@@ -1,5 +1,4 @@
-<<<<<<< Updated upstream
-=======
+
 from pysc2.agents import base_agent
 from pysc2.env import sc2_env
 from pysc2.env.sc2_env import SC2Env, AgentInterfaceFormat, Bot, Agent
@@ -291,4 +290,3 @@ def main(unused_argv):
 
 if __name__ == "__main__":
   app.run(main)
->>>>>>> Stashed changes
