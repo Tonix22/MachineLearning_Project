@@ -708,12 +708,224 @@ A map with 2 Marines and an endless supply of Mineral Shards.
  Marines).
 \end_layout
 
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Collect Minerals Map
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename mapmineralrs.png
+	lyxscale 80
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Brush
+\end_layout
+
+\begin_layout Standard
+It generates a squared matrix with a Gaussian distribution.
+ We call the output as heightmap.
+ The idea of the heightmap is to generate deep used in the HillClimbing
+ algorithms, as a point on the new mapping is higher, the density of minerals
+ grows too.
+ 
+\end_layout
+
+\begin_layout Itemize
+Map - Matrix with the size of our game screen (initialized with 0s) 
+\end_layout
+
+\begin_layout Itemize
+We can stamp out our brush 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Add the values of our brush over a coord in Map 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+If we stamp several times we get our map with concentration point
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Height map
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename mayaheight.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename lateral.png
+	lyxscale 80
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 A*
 \end_layout
 
+\begin_layout Standard
+This version of A* try to find a next first maximum local only using a heuristic
+ based in the value of coordinates of the mesh.
+ The real problem is that needs a lot of calculus when the map is almost
+ empty, because there are a lot of “plain ground” and that make difficult
+ to find the maximum.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Upper view of heights used in A* 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename uperrviewAstar.png
+	lyxscale 50
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 HillClimbing and Simulated Annealing
+\end_layout
+
+\begin_layout Standard
+Using the heihgt map, we could procced to find a max height point, as a
+ best option to gather minerals.
+ This is hill climbing algorithm, however a problem is that we could get
+ stuck in a local maxima, so our strategy is to implement a chance given
+ by a probability distribution, in this case we use a temperature boltzmann
+ distribution 
+\begin_inset Formula $e^{\text{\frac{\text{∆}E}{T}}}>rand(0,1)$
+\end_inset
+
+ .
+ The temperature will decres by an alpha factor inside a loop.
+ For tuning the alpha we did the following equations.
+ 
+\begin_inset Formula $T_{0}=inital\thinspace temperature$
+\end_inset
+
+ , 
+\begin_inset Formula $a=decreasing\thinspace\thinspace factor$
+\end_inset
+
+ , 
+\begin_inset Formula $n=iterations$
+\end_inset
+
+, 
+\begin_inset Formula $T_{f}=final\thinspace temperature$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $T_{0}*a^{n}=Tf$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $a=e^{\frac{ln(\frac{T_{f}}{T_{0}})}{n}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As shown below there is an aplication of the simulated anealing, the chance
+ part is designed with the equation above.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -722,10 +934,6 @@ placement H
 wide false
 sideways false
 status open
-
-\begin_layout Plain Layout
-
-\end_layout
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
