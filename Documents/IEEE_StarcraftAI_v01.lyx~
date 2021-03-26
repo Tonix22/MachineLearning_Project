@@ -651,11 +651,7 @@ Mesh
 Map is shown in a 64x64 array fashion, this is equivalent to 4K elements
  to compare and analyse for any recursive algorithm.
  This means it will significantly underperform the user expirience.
- It was done a quantisationon of bigger grids as a result of doing less
- iteration of the algorithms.
- For example, if we originaly had a grid of 64X64 , then we could transform
- it to 8x8 grid.
- 
+ It was done a quantisationon of bigger grids 
 \end_layout
 
 \begin_layout Subsection
