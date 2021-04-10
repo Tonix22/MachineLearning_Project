@@ -8,6 +8,14 @@ from pysc2.lib import actions, features, units
 from pysc2.env import sc2_env, run_loop
 from inteligencia import *
 from collections import deque
+import enum
+
+class phase(enum.Enum):
+    IDLE     = 0
+    NN_QUERY = 1
+    REPORT_TO_MARINES = 2
+    REPORT_COMPLETE   = 3
+
 
 class Agent(base_agent.BaseAgent):
   actions = ("atacar_zerglings",
@@ -62,6 +70,8 @@ class SmartAgent(Agent):
     self.previous_state = None
     self.previous_action = None
     self.new_game()
+    self.phase = phase.IDLE
+    self.marine_idx = 0
 
     #dentro las tropas [2] hp y [29] ID
 
@@ -114,17 +124,17 @@ class SmartAgent(Agent):
   
   def get_state(self, obs):
     
-    marines = self.get_my_units_by_type(obs, units.Terran.Marine)
-    zergling = self.get_enemy_units_by_type(obs, units.Zerg.Zergling)
-    baneling = self.get_enemy_units_by_type(obs, units.Zerg.Baneling)
+    self.marines = self.get_my_units_by_type(obs, units.Terran.Marine)
+    self.zergling = self.get_enemy_units_by_type(obs, units.Zerg.Zergling)
+    self.baneling = self.get_enemy_units_by_type(obs, units.Zerg.Baneling)
     marines_hp=0
-    for m in marines:
+    for m in self.marines:
       marines_hp += m[2]
     zergling_hp=0
-    for z in zergling:
+    for z in self.zergling:
       zergling_hp += z[2]
     baneling_hp=0
-    for b in baneling:
+    for b in self.baneling:
       baneling_hp += b[2]
 
     
@@ -138,21 +148,51 @@ class SmartAgent(Agent):
              "total_banelings" : len (baneling),
              "total_hp_banelings" : baneling_hp})"""
 
-    return ([len (marines)/9,
+    return ([len (self.marines)/9,
              marines_hp/405,
-             len (zergling)/6,
+             len (self.zergling)/6,
              zergling_hp/210,
-             len (baneling)/4,
+             len (self.baneling)/4,
              baneling_hp/120])
 
   def step(self, obs):
     super(SmartAgent, self).step(obs)
     if obs.first():
-      self.new_game()
+      self.new_game() # limpiamos variables
+
+    if obs.last(): 
+      None #Guardamos resultado del juego
+    else : #estado
+      if self.victima == 0:
+        if self.phase == phase.IDLE:
+          #QUERY TO NN
+          self.phase   = phase.NN_QUERY
+
+          action       = self.nnq.choose_action(self.get_state(obs))
+          self.victima = self.get_ID_lowestHp(action)
+
+          ## PROPAGATE ID TO MARINES TO ATACK
+          self.phase   = phase.REPORT_TO_MARINES
+
+      if self.phase == phase.REPORT_TO_MARINES:
+        self.temp_id = self.marine_idx # marine por indice de array
+        self.marine_idx+=1
+
+        if(self.marine_idx == len(self.marines)):
+          self.marine_idx = 0
+          self.phase = phase.REPORT_COMPLETE
+          #ALL marines informed
+          return actions.RAW_FUNCTIONS.no_op()
+          
+        #madar atacar al marine disponible
+        return self.attack(obs,self.marines[self.marine_idx],self.victima)
+
+      if self.phase == phase.REPORT_COMPLETE:
+        if self.victima[29] == 0: # el id no existe?
+          self.phase = phase.IDLE
       
-      
-    state = self.get_state(obs)
-    print (state)
+    #state = self.get_state(obs)
+    #print (state)
     #obs.reward
     #'terminal' if obs.last() else state #
     #return getattr(self, action)(obs)
