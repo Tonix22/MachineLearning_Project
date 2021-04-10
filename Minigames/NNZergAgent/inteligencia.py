@@ -8,12 +8,12 @@ class LinearDeepQNetwork(nn.Module):
     def __init__(self, lr, n_actions, input_dims):
         super(LinearDeepQNetwork,self).__init__()
 
-        self.fc1 = nn.Linear(*input_dims, 64)
+        self.fc1 = nn.Linear(input_dims, 64)
         self.fc2 = nn.Linear(64, n_actions)
 
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
         self.loss = nn.MSELoss()
-        self.device = 'cuda:0' if T.cuda.is_available() else 'cpu'
+        self.device = 'cpu'
 
         self.to(self.device)
     def forward(self,state):
@@ -22,7 +22,7 @@ class LinearDeepQNetwork(nn.Module):
 
         return actions
 
-class Agent():
+class nnq():
     def __init__(self, input_dims, n_actions, lr, gamma=0.99, epsilon=1.0, eps_dec=1e-5, eps_min=0.01):
         self.lr=lr
         self.input_dims = input_dims
@@ -64,6 +64,3 @@ class Agent():
         loss.backward()
         self.Q.optimizer.step()
         self.decrement_epsilon()
-
-
-
