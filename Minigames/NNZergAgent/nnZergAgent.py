@@ -72,6 +72,11 @@ class SmartAgent(Agent):
     self.new_game()
     self.phase = phase.IDLE
     self.marine_idx = 0
+    self.marine_tmp_list = []
+    self.juego = 0
+    self.ganados=0
+    self.perdidos=0
+
 
     #dentro las tropas [2] hp y [29] ID
 
@@ -104,7 +109,7 @@ class SmartAgent(Agent):
     averageHpEnemies  = ((self.previous_state[3]-state[3])+(self.previous_state[5]-state[5]))/2 # 
     if myHp<averageHpEnemies:
       return 1
-    elif myHP==averageHpEnemies:
+    elif myHp==averageHpEnemies:
       return 0
     else:
       return -1
@@ -121,7 +126,20 @@ class SmartAgent(Agent):
   
     # decidir
     # pasar la cola de ataque 
-  
+  def isAlive(self, obs, id):
+    marines = self.get_my_units_by_type(obs, units.Terran.Marine)
+    for m in marines:
+      if m[29]==id:
+        return 1
+    zergs = self.get_enemy_units_by_type(obs, units.Zerg.Zergling)
+    for z in zergs:
+      if z[29]==id:
+        return 1
+    bane = self.get_enemy_units_by_type(obs, units.Zerg.Baneling)
+    for b in bane:
+      if b[29]==id:
+        return 1
+    return 0
   def get_state(self, obs):
     
     self.marines = self.get_my_units_by_type(obs, units.Terran.Marine)
@@ -137,17 +155,6 @@ class SmartAgent(Agent):
     for b in self.baneling:
       baneling_hp += b[2]
 
-    
-    """return ({"marines": marines,
-             "total_marines" : len (marines),
-             "total_hp_marines" : marines_hp,
-             "zerglings": zergling,
-             "total_zerglings" : len (zergling),
-             "total_hp_zerglings" : zergling_hp,
-             "banelings": baneling,
-             "total_banelings" : len (baneling),
-             "total_hp_banelings" : baneling_hp})"""
-
     return ([len (self.marines)/9,
              marines_hp/405,
              len (self.zergling)/6,
@@ -159,43 +166,44 @@ class SmartAgent(Agent):
     super(SmartAgent, self).step(obs)
     if obs.first():
       self.new_game() # limpiamos variables
-
-    if obs.last(): 
-      None #Guardamos resultado del juego
+    state = self.get_state(obs)
+    if state[0]==0 or state[2]+state[4] == 0:       
+      if(state[0]-(state[2]+state[4])>0):
+        self.ganados += 1
+        print (f"{self.juego+1}: Se gano ---- V/P {self.ganados}/{self.perdidos} M:{state[0]} Z:{state[2]} B:{state[4]}")
+      else:
+        self.perdidos += 1
+        print (f"{self.juego+1}: Se Perdio ---- V/P {self.ganados}/{self.perdidos} M:{state[0]} Z:{state[2]} B:{state[4]} ")
+      self.juego += 1
     else : #estado
-      if self.victima == 0:
-        if self.phase == phase.IDLE:
-          #QUERY TO NN
-          self.phase   = phase.NN_QUERY
+      if (self.victima == 0 or self.isAlive(obs,self.victima)==0 ):
+        if   self.victima != 0:
+          #como venimos de tomar una acción necesitamos aprender
+          self.nnq.learn(self.previous_state,self.previous_action,self.rewardHpCheck(self.get_state(obs)),self.get_state(obs))
+        
+        #nos preparamos para la nueva toma de  desición
+        self.previous_state = state
+        self.previous_action = self.nnq.choose_action(self.get_state(obs))
+        #si la accion es 0 se selecciona un zergling si es 1 se selecciona un baneling
+        if (self.previous_action == 0):
+          self.victima = self.get_ID_lowestHp(self.get_enemy_units_by_type(obs, units.Zerg.Zergling))
+        elif(self.previous_action == 1):
+          self.victima = self.get_ID_lowestHp(self.get_enemy_units_by_type(obs, units.Zerg.Baneling))
+        self.phase   = phase.REPORT_TO_MARINES
+        self.marine_tmp_list.clear()
+        self.marine_idx = 0
+        for m in self.get_my_units_by_type(obs, units.Terran.Marine):
+          self.marine_tmp_list.append(m[29])
 
-          action       = self.nnq.choose_action(self.get_state(obs))
-          self.victima = self.get_ID_lowestHp(action)
-
-          ## PROPAGATE ID TO MARINES TO ATACK
-          self.phase   = phase.REPORT_TO_MARINES
 
       if self.phase == phase.REPORT_TO_MARINES:
-        self.temp_id = self.marine_idx # marine por indice de array
-        self.marine_idx+=1
-
-        if(self.marine_idx == len(self.marines)):
-          self.marine_idx = 0
+        if(len(self.marine_tmp_list)>self.marine_idx):
+          self.marine_idx += 1
+          if (self.isAlive(obs,self.marine_tmp_list[self.marine_idx-1])==1 and self.isAlive(obs,self.victima)==1):
+            return self.attack(obs,self.marine_tmp_list[self.marine_idx-1],self.victima)
+        else:
           self.phase = phase.REPORT_COMPLETE
-          #ALL marines informed
-          return actions.RAW_FUNCTIONS.no_op()
-          
-        #madar atacar al marine disponible
-        return self.attack(obs,self.marines[self.marine_idx],self.victima)
-
-      if self.phase == phase.REPORT_COMPLETE:
-        if self.victima[29] == 0: # el id no existe?
-          self.phase = phase.IDLE
-      
-    #state = self.get_state(obs)
-    #print (state)
-    #obs.reward
-    #'terminal' if obs.last() else state #
-    #return getattr(self, action)(obs)
+    
     return actions.RAW_FUNCTIONS.no_op()
 
 
@@ -217,7 +225,7 @@ def main(unused_argv):
         step_mul=1,
         disable_fog=False,
     ) as env:
-      run_loop.run_loop([agent1], env, max_episodes=1000)
+      run_loop.run_loop([agent1], env, max_episodes=100000)
   except KeyboardInterrupt:
     pass
 

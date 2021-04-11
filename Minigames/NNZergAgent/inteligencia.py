@@ -36,7 +36,7 @@ class nnq():
         self.Q = LinearDeepQNetwork(self.lr,self.n_actions,self.input_dims)
 
     def choose_action(self, observations):   
-        if np.random.random() > self.epsilon:
+        if np.random.rand() > self.epsilon:
             state = T.tensor(observations, dtype=T.float).to(self.Q.device) 
             actions = self.Q.forward(state)
             action = T.argmax(actions).item()
@@ -52,7 +52,7 @@ class nnq():
         states = T.tensor(state,dtype=T.float).to(self.Q.device)
         actions = T.tensor(action).to(self.Q.device)
         rewards = T.tensor(reward).to(self.Q.device)
-        states_ = T.tensor(state_, detype=T.float).to(self.Q.device)
+        states_ = T.tensor(state_, dtype=T.float).to(self.Q.device)
 
         q_pred = self.Q.forward(states)[actions]
 
