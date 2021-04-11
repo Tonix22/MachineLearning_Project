@@ -76,6 +76,9 @@ class SmartAgent(Agent):
     self.juego = 0
     self.ganados=0
     self.perdidos=0
+    self.previous_reward=0
+    self.scores=0
+    self.promedios = []
 
 
     #dentro las tropas [2] hp y [29] ID
@@ -91,6 +94,7 @@ class SmartAgent(Agent):
     self.previous_state = None
     self.previous_action = None
     self.victima = 0
+    self.previous_reward=0
 
   def get_ID_lowestHp(self, arrayCharacters):
     #revisa quien tiene el menor hp y regresa su id
@@ -155,33 +159,37 @@ class SmartAgent(Agent):
     for b in self.baneling:
       baneling_hp += b[2]
 
-    return ([len (self.marines)/9,
-             marines_hp/405,
-             len (self.zergling)/6,
-             zergling_hp/210,
-             len (self.baneling)/4,
-             baneling_hp/120])
+    return ([len (self.marines),
+             marines_hp,
+             len (self.zergling),
+             zergling_hp,
+             len (self.baneling),
+             baneling_hp])
 
   def step(self, obs):
     super(SmartAgent, self).step(obs)
     if obs.first():
       self.new_game() # limpiamos variables
     state = self.get_state(obs)
-    if state[0]==0 or state[2]+state[4] == 0:       
-      if(state[0]-(state[2]+state[4])>0):
-        self.ganados += 1
-        print (f"{self.juego+1}: Se gano ---- V/P {self.ganados}/{self.perdidos} M:{state[0]} Z:{state[2]} B:{state[4]}")
-      else:
-        self.perdidos += 1
-        print (f"{self.juego+1}: Se Perdio ---- V/P {self.ganados}/{self.perdidos} M:{state[0]} Z:{state[2]} B:{state[4]} ")
+    if obs.last():
+      self.scores += self.reward
+      self.reward = 0
+      if self.episodes % 100 == 0 and self.episodes !=0:
+        self.promedios.append(self.scores/100)
+        self.scores = 0
+        print(self.promedios)
+        T.save(self.nnq.Q.state_dict(), f"modelo{self.episodes//100}.pth")
+
       self.juego += 1
     else : #estado
       if (self.victima == 0 or self.isAlive(obs,self.victima)==0 ):
-        if   self.victima != 0:
+        if   self.victima != 0 and self.previous_state[0] >= self.get_state(obs)[0]:
           #como venimos de tomar una acción necesitamos aprender
+          #print ("aprendi")
           self.nnq.learn(self.previous_state,self.previous_action,self.rewardHpCheck(self.get_state(obs)),self.get_state(obs))
         
         #nos preparamos para la nueva toma de  desición
+        self.previous_reward = self.reward
         self.previous_state = state
         self.previous_action = self.nnq.choose_action(self.get_state(obs))
         #si la accion es 0 se selecciona un zergling si es 1 se selecciona un baneling
@@ -222,7 +230,7 @@ def main(unused_argv):
             use_raw_units=True,
             raw_resolution=64,
         ),
-        step_mul=1,
+        step_mul=5,
         disable_fog=False,
     ) as env:
       run_loop.run_loop([agent1], env, max_episodes=100000)
