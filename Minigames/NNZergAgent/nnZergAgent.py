@@ -63,7 +63,7 @@ class Agent(base_agent.BaseAgent):
 
 class SmartAgent(Agent):
   def __init__(self):
-    self.nnq = nnq(input_dims=6, n_actions=2, lr=0.2)
+    self.nnq = nnq(input_dims=6, n_actions=2, lr=0.5)
     self.victima = 0 #ID del objetivo
     self.marines = [] #Lista de marines activos
     self.zerlings = [] #Lista de Zerglings Vivos
@@ -180,7 +180,8 @@ class SmartAgent(Agent):
       if self.episodes % 100 == 0 and self.episodes !=0:
         self.promedios.append(self.scores/100)
         self.scores = 0
-        self.paso += 1
+        if(self.paso < 20):
+          self.paso += 1
         print(self.promedios)
         T.save(self.nnq.Q.state_dict(), f"modelo{self.episodes//100}.pth")
 
@@ -224,9 +225,7 @@ class SmartAgent(Agent):
 
 
 def main(unused_argv):
-  agent1 = SmartAgent()
-  
-  
+  agent1 = SmartAgent() 
   try:
     with sc2_env.SC2Env(
         map_name="DefeatZerglingsAndBanelings",
