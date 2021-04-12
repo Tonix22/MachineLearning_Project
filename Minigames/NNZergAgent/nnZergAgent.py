@@ -17,6 +17,7 @@ class phase(enum.Enum):
     REPORT_COMPLETE   = 3
 
 
+
 class Agent(base_agent.BaseAgent):
   actions = ("atacar_zerglings",
              "atacar_banelings", 
@@ -79,6 +80,8 @@ class SmartAgent(Agent):
     self.previous_reward=0
     self.scores=0
     self.promedios = []
+    self.paso = 1
+    self.actual = 1
 
 
     #dentro las tropas [2] hp y [29] ID
@@ -177,6 +180,7 @@ class SmartAgent(Agent):
       if self.episodes % 100 == 0 and self.episodes !=0:
         self.promedios.append(self.scores/100)
         self.scores = 0
+        self.paso += 1
         print(self.promedios)
         T.save(self.nnq.Q.state_dict(), f"modelo{self.episodes//100}.pth")
 
@@ -206,9 +210,13 @@ class SmartAgent(Agent):
 
       if self.phase == phase.REPORT_TO_MARINES:
         if(len(self.marine_tmp_list)>self.marine_idx):
-          self.marine_idx += 1
-          if (self.isAlive(obs,self.marine_tmp_list[self.marine_idx-1])==1 and self.isAlive(obs,self.victima)==1):
-            return self.attack(obs,self.marine_tmp_list[self.marine_idx-1],self.victima)
+          if(self.actual == self.paso):
+            self.marine_idx += 1
+            self.actual = 1
+            if (self.isAlive(obs,self.marine_tmp_list[self.marine_idx-1])==1 and self.isAlive(obs,self.victima)==1):
+              return self.attack(obs,self.marine_tmp_list[self.marine_idx-1],self.victima)
+          else:
+            self.actual += 1
         else:
           self.phase = phase.REPORT_COMPLETE
     
@@ -217,9 +225,7 @@ class SmartAgent(Agent):
 
 def main(unused_argv):
   agent1 = SmartAgent()
-  juego = 0
-  scores = []
-  eps_history = []
+  
   
   try:
     with sc2_env.SC2Env(
@@ -230,10 +236,10 @@ def main(unused_argv):
             use_raw_units=True,
             raw_resolution=64,
         ),
-        step_mul=5,
+        step_mul=1,
         disable_fog=False,
     ) as env:
-      run_loop.run_loop([agent1], env, max_episodes=100000)
+      run_loop.run_loop([agent1], env, max_episodes=1000)
   except KeyboardInterrupt:
     pass
 
