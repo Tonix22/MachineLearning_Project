@@ -2106,24 +2106,90 @@ Bannelings and zerlings
 \end_layout
 
 \begin_layout Subsection
-Defining EPOCHs
+Defining Net
 \end_layout
 
 \begin_layout Standard
-During the game we will train a neuronal net of 3 layers.
+For the net is used pytorch as the main framework.
+ During the game we will train a neuronal net of 3 layers.
  Input with 6 Neurons, hidden with 64 and ouput with 2.
-  
+ The input neruron came from the state that RAW data of minimap gives.
+ The input layer is defined as follows : {len (self.marines), marines_hp,
+ len (self.zergling), zergling_hp, len (self.baneling), baneling_hp]}, and
+ output layer is : {0 (zerling) and 1(banneling)}, this ones are two type
+ of enemies that has different attack properties.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename neuronalnetpythonnn.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Python NN code
+\end_layout
+
+\end_inset
+
 
 \end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Defining EPOCHs
+\end_layout
+
+\begin_layout Standard
+Usally the marines will be defeat because zerlings and bannelings respawn,
+ the idea is to survive such as make the high score.
+ Once marines are defeat the system get the score and pass it to the net
+ in order to correct the weights and do better decitions.
+ In the image below it is shown, how the net is query to atack certain enemies,
+ note that there is a time increment in the atacking cycle, this ones one
+ provides sufficent respond time to the control system.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -2152,6 +2218,125 @@ Epochs cycling
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Results and Runs
+\end_layout
+
+\begin_layout Standard
+The more epochs have passed, the better the score is.
+ It was tried with different learning rates.
+ And it was found that lr=.05 was the smoother.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename lr1curve_lr_02.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename lr1curve_lr_05.png
+	lyxscale 50
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename lr1curve_lr_01.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Learning rate curves
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Conclusions
+\end_layout
+
+\begin_layout Standard
+The pytorch framework seems to be frendly, as you don't have to worry of
+ some details, but in the same way is also customizable.
+ The implementation of the network works correctly, and the target for the
+ next release is to integrate this one in the simple64
+\end_layout
+
+\begin_layout Section
+Final release
+\end_layout
+
+\begin_layout Subsection
+Map description
+\end_layout
+
+\begin_layout Subsection
+Strategy and implementation
+\end_layout
+
+\begin_layout Subsection
+Results
+\end_layout
+
+\begin_layout Subsection
+Conclusions
 \end_layout
 
 \begin_layout Section

@@ -2111,7 +2111,17 @@ Defining EPOCHs
 
 \begin_layout Standard
 During the game we will train a neuronal net of 3 layers.
- 
+ Input with 6 Neurons, hidden with 64 and ouput with 2.
+ The input neruron came from the state that RAW data of minimap gives.
+ The input layer is defined as follows : {len (self.marines), marines_hp,
+ len (self.zergling), zergling_hp, len (self.baneling), baneling_hp]}, and
+ output layer is : {0 (zerling) and 1(banneling)}, this ones are two type
+ of enemies that has different attack properties.
+ Usally the marines will death because zerlings and bannelings respawn,
+ the idea is to survive such as make the high score.
+ Once marines are defeat the system get the score and pass to the net in
+ ordert to correct the wights and take better desisitons.
+ In the image below 
 \end_layout
 
 \begin_layout Standard
@@ -2119,10 +2129,6 @@ During the game we will train a neuronal net of 3 layers.
 wide false
 sideways false
 status open
-
-\begin_layout Plain Layout
-
-\end_layout
 
 \begin_layout Plain Layout
 \align center
@@ -2151,6 +2157,14 @@ Epochs cycling
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Results and Runs
+\end_layout
+
+\begin_layout Subsection
+Conclusions
 \end_layout
 
 \begin_layout Section
