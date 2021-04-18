@@ -656,18 +656,170 @@ Map is shown in a 64x64 array fashion, this is equivalent to 4K elements
  For example, if we originaly had a grid of 64X64 , then we could transform
  it to 8x8 grid.
  
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename mapgrid.png
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Grid in the map 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
 Iterative Deepening Search (IDS)
 \end_layout
 
+\begin_layout Standard
+Exploration node expansion is limited by the neighborads in an straight
+ forward manner.
+ Only the first exploration check all neightborads.
+ However the idea is to avoid repeating nodes, in this way we could have
+ a faster solution using dynamic programing.
+ In the image bellow, is show the diagram of how expansion is exploring
+ node.
+ Note that mesh help us to reduce work becuase we don't check each pixel
+ of the map, only a subsample steped.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename explorationmeshIDF.png
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mesh exploration 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Bellman Ford Implicit (BFI)
 \end_layout
 
+\begin_layout Standard
+This Algorithm uses a closed/open logic, to explored the nodes, it is quite
+ similar to A*.
+ The difference is that this method doesn't has an heuristic, we just only
+ used ecludian distance to choose de shortest path.
+ It is a dymanic programing solution, it cuts when the goal is reached.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename bellmanfordimplicit.png
+	lyxscale 70
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mesh Belman ford
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Conclusion
+\end_layout
+
+\begin_layout Standard
+Both methods were fast in proportion with user expirience.
+ There were not so delay, and the game was totaly functional.
+ In this first stage of the project we had to deal with pysc2.
+ So there was also some time invested in this task.
+ The main idea was to familiriazed with the framework.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -909,6 +1061,7 @@ Using the heihgt map, we could procced to find a max height point, as a
 \end_layout
 
 \begin_layout Standard
+\align center
 \begin_inset Formula $T_{0}*a^{n}=Tf$
 \end_inset
 
@@ -916,6 +1069,7 @@ Using the heihgt map, we could procced to find a max height point, as a
 \end_layout
 
 \begin_layout Standard
+\align center
 \begin_inset Formula $a=e^{\frac{ln(\frac{T_{f}}{T_{0}})}{n}}$
 \end_inset
 
@@ -1070,6 +1224,15 @@ Conclusion
 \end_layout
 
 \begin_layout Standard
+In this stage it was found that Hill climibing was faster than A*, this
+ could be because the height brush, was helpful to reduce the iterations
+ in the search, get the local optimal point was cheaper than comparing all
+ nodes like A*, maybe A* is more acurate but the trade off is the time perfomanc
+e.
+  
+\end_layout
+
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -1106,20 +1269,893 @@ A map with 3 Marines and an endless supply of stationary Zerglings.
  and at least 5 units away from all other Zerglings).
 \end_layout
 
+\begin_layout Standard
+\noindent
+
+\series bold
+Initial State 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+3 Marines at map center (preselected) 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+2 Zerglings spawned at random locations inside player's vision range (between
+ 7.5 and 9.5 units away from map center and at least 5 units away from all
+ other Zerglings) 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+23 Zerglings spawned at random locations outside player's vision range (at
+ least 10.5 units away from map center and at least 5 units away from all
+ other Zerglings) 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Rewards 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Zergling defeated: +1 Marine defeated: -1 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+End Conditions Time elapsed All Marines defeated 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Time Limit 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+180 seconds 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Additional Notes 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Fog of War enabled 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Camera movement required (map is larger than single-screen) 
+\end_layout
+
 \begin_layout Subsection
 Alpha-beta Prunning / Minmax 
+\end_layout
+
+\begin_layout Standard
+It was reused the children matrix of the map (Figure 4).
+ But this time it is analysed the cost of each point depending of the not
+ foged view.
+ Estimating the chance of win or lose, it is weigh with 1 win(Zerling death)
+ , 0 tie(Zerling and Marine death) and -1 lose(Marine death).
+ Knowing this information it was built an alpha beta prunning algorithm.
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename alphabetaprinning.png
+	lyxscale 70
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Alpha beta prunning code
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
 Cost function with Heuristic 
 \end_layout
 
+\begin_layout Standard
+Given the minimap and the explored ares, there is a shadowed grayscale look
+ of the minimap.
+ The info is provided in the following way : {0: Not seen before, 1: Seen
+ before, but not visible, 2: Visible}.
+ With this 3 states, it was calculated the enemies in state 1 and 2.
+ Knowing this is calculated a density of enemies in relation with each shaded
+ area, in this way it is given weights to each array of cordenates in state
+ 1 and 2.
+ Finally the distance of unexplored areas is taken and added to heuristic
+ in an euclidan way.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename heuristicshadedmap.png
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Heristic shaded map 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Conclusion
 \end_layout
 
+\begin_layout Standard
+In this particular case, alpha beta prunning didn't work because it is a
+ real time game, so the response of the system is not quite acurate, system
+ responds very slow to atacks, and just in some seconds all maries were
+ death.
+ In the other hand the heuristic one, perfoms better than the other, but
+ its main problem was that the marines kill themselves when they almost
+ explored the map.
+ This could be because the set of points of the unexplored area where to
+ close, and they atack themselves.
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Bayesian Networks
+\end_layout
+
+\begin_layout Subsection
+Map Description 
+\end_layout
+
+\begin_layout Standard
+\noindent
+This map is consist in a map medium map size with four camps that contains
+ minerals and vespene gas.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+This map is for two players that try to destroy each other.
+ They are two agents against each other.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Initial State 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+1 command center 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+12 SCV 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Rewards 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Win and keep your live 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+End Conditions 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Destroy the enemy 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Time Limit 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+No 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Additional Notes 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+We manually activated fog of war And visualize features 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Map and characters overview
+\end_layout
+
+\begin_layout Standard
+This map is a little more complex than others, because it could have more
+ types of characters.
+ SCV, are used to gather minerals, with this minerals it could be build
+ supply depots, then this ones are used to build barracks, with the barracks
+ the marines are built, and finally with marines attack is possible.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename mapoverviewsimple64.png
+	lyxscale 70
+	scale 50
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename diagram.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Map overview simple 64
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The main idea is to generate more marines as possible, as soon as one of
+ them explore the map and then the others atack the enemy base.
+ However the reaper is an ideal character to explore because could fly and
+ skip mountains.
+ So this character can avoid go around the mountains and hills, so he do
+ a faster work.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename characters in simple64.png
+	lyxscale 60
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Characters in simple 64
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Bayesian newtork scouting 
+\end_layout
+
+\begin_layout Standard
+The pourpose of the bayesian network is to control the scouting, in others
+ words, explore and find enemy base.
+ This is a strategy that comes from micromanagment as a branch of RST AI
+ workflow.
+ Based on the manhatan distance a scout character will take a desition in
+ only 4 possible ways.
+ To do things simpler this task uses a reaper , that can skip mountains
+ and hills.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+Firstly, we emulate our bayesian network in a GUI (
+\series bold
+unbbayes-4.22.18
+\series default
+).
+ Secondly we pass our net to the 
+\series bold
+Pgmpy
+\series default
+ library that is in python.
+ Both softwares allow you to do belief propagation depending on the inputs
+ given to the bayesian net.
+ Finally it was done the integration with the simple64 commands and the
+ 
+\series bold
+Pgmpy
+\series default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename dagbayesian64.png
+	lyxscale 70
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename valuesbayesian.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Scouting bayesian network dag and its probalities
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename python pgmpy diagram.png
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Pgmpy python code
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Reduce overfiting
+\end_layout
+
+\begin_layout Standard
+Map is represented as a minimap in the pysc2 framework, we use a feature
+ of the minimap called pathable.
+ That is the map that characters could used to move around, dark areas are
+ 0 and 1 white ones, white areas are where characters is allow to walk (pathable
+).
+ However data is presented in a fashion of 64x64 array, so to reduce the
+ calculations it was a subsampled data with a grid, that reduces data size,
+ enconding data in a shorter array of 8X8.
+ This allow us to do less belief prograpagtions in the bayesian network.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename gridforbayesiannet.png
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Grid bayesian network
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Results
+\end_layout
+
+\begin_layout Standard
+After grid processing and bayesian network integration, the scouter finally
+ reach the desired area.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename resultsbayesian.png
+	lyxscale 70
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Bayesian working
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Conlusions
+\end_layout
+
+\begin_layout Standard
+Designing Bayesian Networks can be a hard job.
+ Assigning the probabilities is not so intuitive for humans and training
+ is required to help the Bayesian Network to work optimally.
+ Bayesian Networks could be mixed with other strategies, like A* and Alpha
+ Beta pruning, but before you may have a good software planing to do.
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Reinforcement learning and pytorch
+\end_layout
+
+\begin_layout Subsection
+Map Description 
+\end_layout
+
+\begin_layout Standard
+A map with 9 Marines on the opposite side from a group of 6 Zerglings and
+ 4 Banelings.
+ Rewards are earned by using the Marines to defeat Zerglings and Banelings.
+ Whenever all Zerglings and Banelings have been defeated, a new group of
+ 6 Zerglings and 4 Banelings is spawned and the player is awarded 4 additional
+ Marines at full health, with all other surviving Marines retaining their
+ existing health (no restore).
+ Whenever new units are spawned, all unit positions are reset to opposite
+ sides of the map.
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Initial State 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+9 Marines in a vertical line at a random side of the map (preselected) 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+6 Zerglings and 4 Banelings in a group at the opposite side of the map from
+ the Marines 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Rewards 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Zergling defeated: +5 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Baneling defeated: +5 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Marine defeated: -1 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+End Conditions 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Time elapsed 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+All Marines defeated 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Time Limit 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+120 seconds
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Additional Notes 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Fog of War disabled 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+No camera movement required (single-screen) 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+This map and DefeatRoaches are currently the only maps in the set that can
+ include an automatic, mid-episode state change for player-controlled units.
+ The Marine units are automatically moved back to a neutral position (at
+ a random side of the map opposite the Roaches) when new units are spawned,
+ which occurs whenever the current set of Zerglings and Banelings is defeated.
+ This is done in order to guarantee that new units do not spawn within combat
+ range of one another.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename bannelinsandzerlings.png
+	lyxscale 70
+	scale 40
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Bannelings and zerlings
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Defining EPOCHs
+\end_layout
+
+\begin_layout Standard
+During the game we will train a neuronal net of 3 layers.
+ Input with 6 Neurons, hidden with 64 and ouput with 2.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename epochs.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Epochs cycling
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Results and Runs
+\end_layout
+
+\begin_layout Subsection
+Conclusions
 \end_layout
 
 \begin_layout Section
