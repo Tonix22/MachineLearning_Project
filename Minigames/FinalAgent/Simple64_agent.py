@@ -420,7 +420,7 @@ def main(unused_argv):
         ),
         step_mul=48,
         disable_fog=True,
-        visualize=True,
+        #visualize=True,
     ) as env:
       run_loop.run_loop([agent1, agent2], env, max_episodes=1000)
   except KeyboardInterrupt:

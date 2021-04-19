@@ -13,7 +13,7 @@ class LinearDeepQNetwork(nn.Module):
 
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
         self.loss   = nn.MSELoss()
-        self.device = 'cpu'
+        self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
 
         self.to(self.device)
 
