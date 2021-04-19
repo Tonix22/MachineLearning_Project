@@ -37,7 +37,7 @@ class nnq():
 
     def choose_action(self, observations):   
         if np.random.rand() > self.epsilon:
-            state   = T.tensor(observations, dtype=T.float64).to(self.Q.device) 
+            state   = T.tensor(observations, dtype=T.float).to(self.Q.device) 
             actions = self.Q.forward(state)
             action  = T.argmax(actions).item()
         else:

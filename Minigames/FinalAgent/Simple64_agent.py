@@ -7,6 +7,7 @@ from pysc2.agents import base_agent
 from pysc2.lib import actions, features, units
 from pysc2.env import sc2_env, run_loop
 import math
+from inteligencia import *
 
 class QLearningTable:
   def __init__(self, actions, learning_rate=0.01, reward_decay=0.9):
@@ -302,9 +303,109 @@ class SmartAgent(Agent):
     self.previous_action = action
     return getattr(self, action)(obs)
 
+class NNAgent(Agent):
+  def __init__(self):
+    super(NNAgent, self).__init__()
+    self.NN_net = nnq(21,6,0.33) # 21 data in , 6 actions
+    self.new_game()
+    self.scores = 0
+    self.juego  = 0
+    self.promedios = []
+
+  def reset(self):
+    super(NNAgent, self).reset()
+    self.new_game()
+    
+  def new_game(self):
+    self.base_top_left = None
+    self.previous_state = None
+    self.previous_action = None
+
+  def get_state(self, obs):
+    scvs = self.get_my_units_by_type(obs, units.Terran.SCV) # Selección de de todos los robots utilizando la funsión por tipo
+    idle_scvs = [scv for scv in scvs if scv.order_length == 0] # selección de SCV que no tiene acciones en cola osea esta en al hueva
+    command_centers = self.get_my_units_by_type(obs, units.Terran.CommandCenter) # seleccionar el centro de comando
+    supply_depots = self.get_my_units_by_type(obs, units.Terran.SupplyDepot) # Se seleccionan los centros de suministros aunque no esten terminados
+    completed_supply_depots = self.get_my_completed_units_by_type(
+        obs, units.Terran.SupplyDepot)# Se seleccionan los centros de suministros completados
+    barrackses = self.get_my_units_by_type(obs, units.Terran.Barracks)# Se seleccionan las barracas aunque no esten completas
+    completed_barrackses = self.get_my_completed_units_by_type(
+        obs, units.Terran.Barracks)# Se seleccionan las barracas completadas
+    marines = self.get_my_units_by_type(obs, units.Terran.Marine) #Total de marines con los que se cuentan
+    
+    queued_marines = (completed_barrackses[0].order_length 
+                      if len(completed_barrackses) > 0 else 0) #Regresa el total de soldados en cola de entrenamiento.
+    
+    free_supply = (obs.observation.player.food_cap - 
+                   obs.observation.player.food_used) # Total de comida disponible
+    can_afford_supply_depot = obs.observation.player.minerals >= 100 #Valor Booleano que no dice si se puede construir un Supply depot
+    can_afford_barracks = obs.observation.player.minerals >= 150 #Valor Booleano que no dice si se puede construir una Barraca
+    can_afford_marine = obs.observation.player.minerals >= 100 #Valor Booleano que no dice si se puede construir un Marine
+    
+    enemy_scvs = self.get_enemy_units_by_type(obs, units.Terran.SCV) #Cantidad de SCV del enemigo
+    enemy_idle_scvs = [scv for scv in enemy_scvs if scv.order_length == 0] #Cantidad de SCV que no estan haciendo nada
+    enemy_command_centers = self.get_enemy_units_by_type(
+        obs, units.Terran.CommandCenter) #Centro de comando del enemigo
+    enemy_supply_depots = self.get_enemy_units_by_type(
+        obs, units.Terran.SupplyDepot) #centros de suministros del enemigo aunque no esten completos
+    enemy_completed_supply_depots = self.get_enemy_completed_units_by_type(
+        obs, units.Terran.SupplyDepot) #centros de suministros del enemigo completos
+    enemy_barrackses = self.get_enemy_units_by_type(obs, units.Terran.Barracks) #barracas de los enemigos aun que no esten termiandas
+    enemy_completed_barrackses = self.get_enemy_completed_units_by_type(
+        obs, units.Terran.Barracks) #barracas de los enemigos terminadas
+    enemy_marines = self.get_enemy_units_by_type(obs, units.Terran.Marine) #MArines enemigos.
+    
+    return (len(command_centers),
+            len(scvs), 
+            len(idle_scvs),
+            len(supply_depots),
+            len(completed_supply_depots),
+            len(barrackses),
+            len(completed_barrackses),
+            len(marines),
+            queued_marines,
+            free_supply,
+            can_afford_supply_depot,
+            can_afford_barracks,
+            can_afford_marine,
+            len(enemy_command_centers),
+            len(enemy_scvs),
+            len(enemy_idle_scvs),
+            len(enemy_supply_depots),
+            len(enemy_completed_supply_depots),
+            len(enemy_barrackses),
+            len(enemy_completed_barrackses),
+            len(enemy_marines)) #Se regresan todos nuestros valores necesarios.
+
+  def step(self, obs):
+    super(NNAgent, self).step(obs)
+    #state = str(self.get_state(obs))
+    state  = self.get_state(obs)
+    action = self.NN_net.choose_action(state)
+    if self.previous_action is not None:
+      self.NN_net.learn(self.previous_state,
+                        self.previous_action,
+                        obs.reward,
+                        state)
+    self.previous_state  = state
+    self.previous_action = action
+
+    if obs.last():
+      self.scores += obs.reward
+      self.reward = 0
+      if self.episodes % 100 == 0 and self.episodes !=0:
+        self.promedios.append(self.scores/100)
+        self.scores = 0
+        print(self.promedios)
+        T.save(self.NN_net.Q.state_dict(), f"modelo{self.episodes//100}.pth")
+      self.juego += 1
+
+    return getattr(self, self.actions[action])(obs)
+
 
 def main(unused_argv):
-  agent1 = SmartAgent()
+  #agent1 = SmartAgent()
+  agent1 = NNAgent()
   agent2 = RandomAgent()
   try:
     with sc2_env.SC2Env(
@@ -313,11 +414,13 @@ def main(unused_argv):
                  sc2_env.Agent(sc2_env.Race.terran)],
         agent_interface_format=features.AgentInterfaceFormat(
             action_space=actions.ActionSpace.RAW,
+            #feature_dimensions=features.Dimensions(screen=84, minimap=64),#terraing visibility
             use_raw_units=True,
             raw_resolution=64,
         ),
         step_mul=48,
         disable_fog=True,
+        visualize=True,
     ) as env:
       run_loop.run_loop([agent1, agent2], env, max_episodes=1000)
   except KeyboardInterrupt:

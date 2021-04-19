@@ -184,8 +184,8 @@ class SmartAgent(Agent):
           self.paso += 1
         print(self.promedios)
         T.save(self.nnq.Q.state_dict(), f"modelo{self.episodes//100}.pth")
-
       self.juego += 1
+
     else : #estado
       if (self.victima == 0 or self.isAlive(obs,self.victima)==0 ):
         if   self.victima != 0 and self.previous_state[0] >= self.get_state(obs)[0]:
