@@ -170,7 +170,15 @@ class Agent(base_agent.BaseAgent):
         obs.observation.player.minerals >= 150 and len(scvs) > 0):
       barracks_xy = (22, 21) if self.base_top_left else (35, 45)
       distances = self.get_distances(obs, scvs, barracks_xy)
-      scv = scvs[3]
+
+
+      if(len(scvs) > 3):
+        scv = scvs[3]
+      elif len(scvs) > 0:
+        scv = scvs[len(scvs)-1]
+        print("SCV len")
+        print(len(scv))
+
       return actions.RAW_FUNCTIONS.Build_Barracks_pt(
           "now", scv.tag, barracks_xy)
     return actions.RAW_FUNCTIONS.no_op()
