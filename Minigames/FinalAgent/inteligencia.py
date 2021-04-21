@@ -24,7 +24,7 @@ class LinearDeepQNetwork(nn.Module):
         return actions
 
 class nnq():
-    def __init__(self, input_dims, n_actions, lr, gamma=0.80, epsilon=1.0, eps_dec=1e-5, eps_min=0.01):
+    def __init__(self, input_dims, n_actions, lr, gamma=0.80, epsilon=.3, eps_dec=1e-5, eps_min=0.01):
         self.lr=lr
         self.input_dims = input_dims
         self.n_actions = n_actions
@@ -39,7 +39,11 @@ class nnq():
         if np.random.rand() > self.epsilon:
             state   = T.tensor(observations, dtype=T.float).to(self.Q.device) 
             actions = self.Q.forward(state)
+            print("CHOSE*******")
+            print(actions)
             action  = T.argmax(actions).item()
+            print(action)
+            print("*****")
         else:
             action = np.random.choice(self.action_space)
         return action

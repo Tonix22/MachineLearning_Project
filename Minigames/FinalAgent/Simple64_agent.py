@@ -8,6 +8,7 @@ from pysc2.lib import actions, features, units
 from pysc2.env import sc2_env, run_loop
 import math
 from inteligencia import *
+from pathlib import Path
 
 class QLearningTable:
   def __init__(self, actions, learning_rate=0.01, reward_decay=0.9):
@@ -166,14 +167,17 @@ class Agent(base_agent.BaseAgent):
         obs, units.Terran.SupplyDepot)
     barrackses = self.get_my_units_by_type(obs, units.Terran.Barracks)
     scvs = self.get_my_units_by_type(obs, units.Terran.SCV)
-    if (len(completed_supply_depots) > 0 and len(barrackses) == 0 and 
+    if (len(completed_supply_depots) > 0 and len(barrackses) < 2 and 
         obs.observation.player.minerals >= 150 and len(scvs) > 0):
-      barracks_xy = (22, 21) if self.base_top_left else (35, 45)
+      if(len(barrackses) == 0):
+        barracks_xy = (22, 21) if self.base_top_left else (35, 45)
+      if(len(barrackses) == 1):
+        barracks_xy = (22, 24) if self.base_top_left else (38, 40)
       distances = self.get_distances(obs, scvs, barracks_xy)
 
 
       if(len(scvs) > 3):
-        scv = scvs[3]
+        scv = scvs[random.randint(0, 3)]
       elif len(scvs) > 0:
         scv = scvs[len(scvs)-1]
         print("SCV len")
@@ -363,27 +367,27 @@ class NNAgent(Agent):
         obs, units.Terran.Barracks) #barracas de los enemigos terminadas
     enemy_marines = self.get_enemy_units_by_type(obs, units.Terran.Marine) #MArines enemigos.
     
-    return (len(command_centers),
-            len(scvs), 
-            len(idle_scvs),
-            len(supply_depots),
-            len(completed_supply_depots),
-            len(barrackses),
-            len(completed_barrackses),
-            len(marines),
-            queued_marines,
-            free_supply,
-            can_afford_supply_depot,
-            can_afford_barracks,
-            can_afford_marine,
-            len(enemy_command_centers),
-            len(enemy_scvs),
-            len(enemy_idle_scvs),
-            len(enemy_supply_depots),
-            len(enemy_completed_supply_depots),
-            len(enemy_barrackses),
-            len(enemy_completed_barrackses),
-            len(enemy_marines)) #Se regresan todos nuestros valores necesarios.
+    return (len(command_centers), #0
+            len(scvs),  #1
+            len(idle_scvs), #2
+            len(supply_depots), #3
+            len(completed_supply_depots), #4
+            len(barrackses), #5
+            len(completed_barrackses), #6
+            len(marines), #7
+            queued_marines, #8
+            free_supply, #9
+            can_afford_supply_depot, #10
+            can_afford_barracks, #11
+            can_afford_marine, #12
+            len(enemy_command_centers), #13
+            len(enemy_scvs), #14
+            len(enemy_idle_scvs), #15
+            len(enemy_supply_depots), #16
+            len(enemy_completed_supply_depots), #17
+            len(enemy_barrackses), #18
+            len(enemy_completed_barrackses), #19
+            len(enemy_marines)) #Se regresan todos nuestros valores necesarios. #20
 
   def step(self, obs):
     super(NNAgent, self).step(obs)
@@ -408,7 +412,8 @@ class NNAgent(Agent):
         print(self.promedios)
         T.save(self.NN_net.Q.state_dict(), f"modelo{self.episodes//100}.pth")
       self.juego += 1
-
+    #if(action == 3):
+      #input(" ")
     return getattr(self, self.actions[action])(obs)
 
 
@@ -419,9 +424,14 @@ def main(unused_argv):
   #load trained
   #checkpoint = T.load("modelo10.pth")
   model = agent1.NN_net.Q
-  model.load_state_dict(T.load("modelo20.pth"))
+  #path = str(Path().absolute())+"/Minigames/FinalAgent/modelo12.pth"
+  model.load_state_dict(T.load("modelo12.pth"))
   model.eval()
-
+  for i in range (0,64):
+    with T.no_grad():
+      temp = abs(model.fc1.weight[i][5])
+      model.fc1.weight[i][5] = temp
+      print(model.fc1.weight[i][5])
   
   agent2 = RandomAgent()
   try:
@@ -431,18 +441,18 @@ def main(unused_argv):
                  sc2_env.Agent(sc2_env.Race.terran)],
         agent_interface_format=features.AgentInterfaceFormat(
             action_space=actions.ActionSpace.RAW,
-            #feature_dimensions=features.Dimensions(screen=84, minimap=64),#terraing visibility
+            feature_dimensions=features.Dimensions(screen=84, minimap=64),#terraing visibility
             use_raw_units=True,
             raw_resolution=64,
         ),
-        step_mul=48,
+        step_mul=5,
         disable_fog=True,
-        #visualize=True,
+        visualize=True,
     ) as env:
-      run_loop.run_loop([agent1, agent2], env, max_episodes=10000)
+      run_loop.run_loop([agent1, agent2], env, max_episodes=1)
   except KeyboardInterrupt:
     pass
-
+  
 
 if __name__ == "__main__":
   app.run(main)
