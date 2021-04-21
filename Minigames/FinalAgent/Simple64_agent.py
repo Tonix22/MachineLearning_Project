@@ -401,6 +401,7 @@ class NNAgent(Agent):
     if obs.last():
       self.scores += obs.reward
       self.reward = 0
+      print("episode: "+str(self.episodes)+"***********")
       if self.episodes % 100 == 0 and self.episodes !=0:
         self.promedios.append(self.scores/100)
         self.scores = 0
@@ -414,6 +415,14 @@ class NNAgent(Agent):
 def main(unused_argv):
   #agent1 = SmartAgent()
   agent1 = NNAgent()
+  agent1.episodes = 1001 # donde se quedo el ultimo training
+  #load trained
+  #checkpoint = T.load("modelo10.pth")
+  model = agent1.NN_net.Q
+  model.load_state_dict(T.load("modelo20.pth"))
+  model.eval()
+
+  
   agent2 = RandomAgent()
   try:
     with sc2_env.SC2Env(
@@ -430,7 +439,7 @@ def main(unused_argv):
         disable_fog=True,
         #visualize=True,
     ) as env:
-      run_loop.run_loop([agent1, agent2], env, max_episodes=1000)
+      run_loop.run_loop([agent1, agent2], env, max_episodes=10000)
   except KeyboardInterrupt:
     pass
 

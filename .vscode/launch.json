@@ -9,7 +9,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "/home/tonix/Documents/MachineLearning_Project/Minigames/Mineral_shared/MineralAgent.py",
+            "program": "~/Documents/MachineLearning_Project/Minigames/FinalAgent/Simple64_agent.py",
             "console": "integratedTerminal"
         }
     ]
