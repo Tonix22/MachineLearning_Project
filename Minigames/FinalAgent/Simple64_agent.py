@@ -427,7 +427,7 @@ def main(unused_argv):
   path = str(Path().absolute())+"/Minigames/FinalAgent/modelo12.pth"
   #model.load_state_dict(T.load("modelo12.pth")) # este falla en debug
   model.eval()
-  for i in range (0,64):
+  for i in range (0,64): #hardcorde len(barrackses), #5
     with T.no_grad():
       temp = abs(model.fc1.weight[i][5])
       model.fc1.weight[i][5] = temp
