@@ -424,8 +424,8 @@ def main(unused_argv):
   #load trained
   #checkpoint = T.load("modelo10.pth")
   model = agent1.NN_net.Q
-  #path = str(Path().absolute())+"/Minigames/FinalAgent/modelo12.pth"
-  model.load_state_dict(T.load("modelo12.pth"))
+  path = str(Path().absolute())+"/Minigames/FinalAgent/modelo12.pth"
+  #model.load_state_dict(T.load("modelo12.pth")) # este falla en debug
   model.eval()
   for i in range (0,64):
     with T.no_grad():
