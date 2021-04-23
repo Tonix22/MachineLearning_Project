@@ -9,6 +9,30 @@ from pysc2.env import sc2_env, run_loop
 import math
 from inteligencia import *
 from pathlib import Path
+from enum import IntEnum
+
+class ITEM(IntEnum):
+  COMMAND_CENTERS_LEN = 0, #0
+  SCVS_LEN            = 1, #1
+  IDLE_SCVS_LEN       = 2, #2
+  SUPPLY_DEPOTS_LEN   = 3, #3
+  COMPLETED_SUPPLY_DEPOTS_LEN = 4, #4
+  BARRACKSES_LEN              = 5, #5
+  COMPLETED_BARRACKSES_LEN    = 6, #6
+  MARINES_LEN                 = 7, #7
+  QUEUED_MARINES              = 8, #8
+  FREE_SUPPLY                 = 9, #9
+  CAN_AFFORD_SUPPLY_DEPOT     = 10, #10
+  CAN_AFFORD_BARRACKS         = 11, #11
+  CAN_AFFORD_MARINE           = 12, #12
+  ENEMY_COMMAND_CENTERS_LEN   = 13, #13
+  ENEMY_SCVS_LEN              = 14, #14
+  ENEMY_IDLE_SCVS_LEN         = 15, #15
+  ENEMY_SUPPLY_DEPOTS_LEN     = 16, #16
+  ENEMY_COMPLETED_SUPPLY_DEPOTS_LEN = 17, #17
+  ENEMY_BARRACKSES_LEN              = 18, #18
+  ENEMY_COMPLETED_BARRACKSES_LEN    = 19, #19
+  ENEMY_MARINES_LEN                 = 20 #20
 
 class QLearningTable:
   def __init__(self, actions, learning_rate=0.01, reward_decay=0.9):
@@ -323,6 +347,7 @@ class NNAgent(Agent):
     self.scores = 0
     self.juego  = 0
     self.promedios = []
+    self.ai_reward = 0
 
   def reset(self):
     super(NNAgent, self).reset()
@@ -389,31 +414,67 @@ class NNAgent(Agent):
             len(enemy_completed_barrackses), #19
             len(enemy_marines)) #Se regresan todos nuestros valores necesarios. #20
 
+  def update_reward(self,prev_obs, current_obs):
+
+    #NEGATIVE REWARD
+    if  current_obs[ITEM.MARINES_LEN] < prev_obs[ITEM.MARINES_LEN] :
+      self.ai_reward-=1
+    if current_obs[ITEM.SCVS_LEN] < prev_obs[ITEM.SCVS_LEN] :
+      self.ai_reward-=1
+    if current_obs[ITEM.ENEMY_MARINES_LEN] > prev_obs[ITEM.ENEMY_MARINES_LEN]:
+      self.ai_reward-=1
+    if current_obs[ITEM.BARRACKSES_LEN] < prev_obs[ITEM.BARRACKSES_LEN]:
+      self.ai_reward-=1
+    if current_obs[ITEM.ENEMY_COMPLETED_SUPPLY_DEPOTS_LEN] > prev_obs[ITEM.ENEMY_COMPLETED_SUPPLY_DEPOTS_LEN]:
+      self.ai_reward-=1
+    if current_obs[ITEM.IDLE_SCVS_LEN] > prev_obs[ITEM.IDLE_SCVS_LEN]:
+      self.ai_reward-=1
+
+    #POSITIVE REWARDS
+    
+    if current_obs[ITEM.CAN_AFFORD_MARINE] or current_obs[ITEM.QUEUED_MARINES]:
+      self.ai_reward+=1
+    if current_obs[ITEM.SUPPLY_DEPOTS_LEN] > current_obs[ITEM.SUPPLY_DEPOTS_LEN]:
+      self.ai_reward+=1
+    if current_obs[ITEM.BARRACKSES_LEN] > prev_obs[ITEM.BARRACKSES_LEN]:
+      self.ai_reward+=1
+    if current_obs[ITEM.MARINES_LEN] > prev_obs[ITEM.MARINES_LEN]:
+      self.ai_reward+=1
+    if current_obs[ITEM.ENEMY_MARINES_LEN] <  prev_obs[ITEM.ENEMY_MARINES_LEN] :
+      self.ai_reward+=1
+    if current_obs[ITEM.ENEMY_BARRACKSES_LEN] < prev_obs[ITEM.ENEMY_BARRACKSES_LEN]  :
+      self.ai_reward+=1
+    if current_obs[ITEM.ENEMY_SCVS_LEN] < prev_obs[ITEM.ENEMY_SCVS_LEN]:
+      self.ai_reward+=1
+
   def step(self, obs):
     super(NNAgent, self).step(obs)
-    #state = str(self.get_state(obs))
+
+    self.ai_reward = 0 #ai reward
     state  = self.get_state(obs)
     action = self.NN_net.choose_action(state)
     if self.previous_action is not None:
+      self.update_reward(self.previous_state,state)
+      self.ai_reward+=obs.reward
       self.NN_net.learn(self.previous_state,
                         self.previous_action,
-                        obs.reward,
+                        self.ai_reward,
                         state)
     self.previous_state  = state
     self.previous_action = action
 
     if obs.last():
-      self.scores += obs.reward
+      self.scores += obs.score.score
       self.reward = 0
       print("episode: "+str(self.episodes)+"***********")
       if self.episodes % 100 == 0 and self.episodes !=0:
         self.promedios.append(self.scores/100)
         self.scores = 0
+        print("score data: ")
         print(self.promedios)
         T.save(self.NN_net.Q.state_dict(), f"modelo{self.episodes//100}.pth")
       self.juego += 1
-    #if(action == 3):
-      #input(" ")
+
     return getattr(self, self.actions[action])(obs)
 
 
