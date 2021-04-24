@@ -481,6 +481,7 @@ class NNAgent(Agent):
 def main(unused_argv):
   #agent1 = SmartAgent()
   agent1 = NNAgent()
+  """
   agent1.episodes = 1001 # donde se quedo el ultimo training
   #load trained
   #checkpoint = T.load("modelo10.pth")
@@ -493,7 +494,7 @@ def main(unused_argv):
       temp = abs(model.fc1.weight[i][5])
       model.fc1.weight[i][5] = temp
       print(model.fc1.weight[i][5])
-  
+  """
   agent2 = RandomAgent()
   try:
     with sc2_env.SC2Env(
@@ -502,13 +503,13 @@ def main(unused_argv):
                  sc2_env.Agent(sc2_env.Race.terran)],
         agent_interface_format=features.AgentInterfaceFormat(
             action_space=actions.ActionSpace.RAW,
-            feature_dimensions=features.Dimensions(screen=84, minimap=64),#terraing visibility
+            #feature_dimensions=features.Dimensions(screen=84, minimap=64),#terraing visibility
             use_raw_units=True,
             raw_resolution=64,
         ),
         step_mul=5,
         disable_fog=True,
-        visualize=True,
+        #visualize=True,
     ) as env:
       run_loop.run_loop([agent1, agent2], env, max_episodes=1)
   except KeyboardInterrupt:
