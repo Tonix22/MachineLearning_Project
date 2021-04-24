@@ -9,6 +9,7 @@ from pysc2.env import sc2_env, run_loop
 import math
 from inteligencia import *
 from pathlib import Path
+from csvFileData import *
 
 class QLearningTable:
   def __init__(self, actions, learning_rate=0.01, reward_decay=0.9):
@@ -320,7 +321,9 @@ class NNAgent(Agent):
     super(NNAgent, self).__init__()
     self.NN_net = nnq(21,6,0.33) # 21 data in , 6 actions
     self.new_game()
-    self.scores = 0
+                      #0,1,2,3,4,5,6,7,8,9,10,11,12
+    self.scores =     [0,0,0,0,0,0,0,0,0,0,0, 0, 0]
+    self.last_score = [0,0,0,0,0,0,0,0,0,0,0, 0, 0]
     self.juego  = 0
     self.promedios = []
 
@@ -403,9 +406,14 @@ class NNAgent(Agent):
     self.previous_action = action
 
     if obs.last():
-      self.scores += obs.reward
-      self.reward = 0
-      print("episode: "+str(self.episodes)+"***********")
+      for i in range (13):
+        self.scores[i] = obs.observation['score_cumulative'][i]
+      
+      CSVFileData(self.episodes,obs.reward,self.scores)
+
+      #print("current score: "+ str(self.scores))
+
+
       if self.episodes % 100 == 0 and self.episodes !=0:
         self.promedios.append(self.scores/100)
         self.scores = 0
