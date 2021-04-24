@@ -489,7 +489,7 @@ class NNAgent(Agent):
 
       print("current score: "+ str(self.scores))
 
-      if self.episodes % 3 == 0 and self.episodes !=0:
+      if self.episodes % 100 == 0 and self.episodes !=0:
         T.save(self.NN_net.Q.state_dict(), f"modelo{self.episodes//100}.pth")
 
     return getattr(self, self.actions[action])(obs)
