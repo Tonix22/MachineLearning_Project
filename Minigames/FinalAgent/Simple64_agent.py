@@ -524,7 +524,7 @@ def main(unused_argv):
             use_raw_units=True,
             raw_resolution=64,
         ),
-        step_mul=48,
+        step_mul=10,
         disable_fog=True,
         #visualize=True,
     ) as env:
