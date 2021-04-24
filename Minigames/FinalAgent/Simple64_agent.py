@@ -10,6 +10,7 @@ import math
 from inteligencia import *
 from pathlib import Path
 from enum import IntEnum
+from csvFileData import *
 
 class ITEM(IntEnum):
   COMMAND_CENTERS_LEN = 0, #0
@@ -33,6 +34,7 @@ class ITEM(IntEnum):
   ENEMY_BARRACKSES_LEN              = 18, #18
   ENEMY_COMPLETED_BARRACKSES_LEN    = 19, #19
   ENEMY_MARINES_LEN                 = 20 #20
+
 
 class QLearningTable:
   def __init__(self, actions, learning_rate=0.01, reward_decay=0.9):
@@ -344,7 +346,9 @@ class NNAgent(Agent):
     super(NNAgent, self).__init__()
     self.NN_net = nnq(21,6,0.33) # 21 data in , 6 actions
     self.new_game()
-    self.scores = 0
+                      #0,1,2,3,4,5,6,7,8,9,10,11,12
+    self.scores =     [0,0,0,0,0,0,0,0,0,0,0, 0, 0]
+    self.last_score = [0,0,0,0,0,0,0,0,0,0,0, 0, 0]
     self.juego  = 0
     self.promedios = []
     self.ai_reward = 0
@@ -500,11 +504,11 @@ def main(unused_argv):
             use_raw_units=True,
             raw_resolution=64,
         ),
-        step_mul=5,
+        step_mul=48,
         disable_fog=True,
         #visualize=True,
     ) as env:
-      run_loop.run_loop([agent1, agent2], env, max_episodes=1)
+      run_loop.run_loop([agent1, agent2], env, max_episodes=2000)
   except KeyboardInterrupt:
     pass
   
