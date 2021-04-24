@@ -464,14 +464,7 @@ class NNAgent(Agent):
     self.previous_action = action
 
     if obs.last():
-      self.scores += obs.score.score
-      self.reward = 0
-      print("episode: "+str(self.episodes)+"***********")
       if self.episodes % 100 == 0 and self.episodes !=0:
-        self.promedios.append(self.scores/100)
-        self.scores = 0
-        print("score data: ")
-        print(self.promedios)
         T.save(self.NN_net.Q.state_dict(), f"modelo{self.episodes//100}.pth")
       self.juego += 1
 
