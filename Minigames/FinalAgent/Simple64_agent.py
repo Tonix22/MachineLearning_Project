@@ -9,31 +9,9 @@ from pysc2.env import sc2_env, run_loop
 import math
 from inteligencia import *
 from pathlib import Path
-from enum import IntEnum
-from csvFileData import *
+from Enums_and_Data import *
 
-class ITEM(IntEnum):
-  COMMAND_CENTERS_LEN = 0, #0
-  SCVS_LEN            = 1, #1
-  IDLE_SCVS_LEN       = 2, #2
-  SUPPLY_DEPOTS_LEN   = 3, #3
-  COMPLETED_SUPPLY_DEPOTS_LEN = 4, #4
-  BARRACKSES_LEN              = 5, #5
-  COMPLETED_BARRACKSES_LEN    = 6, #6
-  MARINES_LEN                 = 7, #7
-  QUEUED_MARINES              = 8, #8
-  FREE_SUPPLY                 = 9, #9
-  CAN_AFFORD_SUPPLY_DEPOT     = 10, #10
-  CAN_AFFORD_BARRACKS         = 11, #11
-  CAN_AFFORD_MARINE           = 12, #12
-  ENEMY_COMMAND_CENTERS_LEN   = 13, #13
-  ENEMY_SCVS_LEN              = 14, #14
-  ENEMY_IDLE_SCVS_LEN         = 15, #15
-  ENEMY_SUPPLY_DEPOTS_LEN     = 16, #16
-  ENEMY_COMPLETED_SUPPLY_DEPOTS_LEN = 17, #17
-  ENEMY_BARRACKSES_LEN              = 18, #18
-  ENEMY_COMPLETED_BARRACKSES_LEN    = 19, #19
-  ENEMY_MARINES_LEN                 = 20 #20
+
 
 
 class QLearningTable:
@@ -351,6 +329,7 @@ class NNAgent(Agent):
     self.last_score = [0,0,0,0,0,0,0,0,0,0,0, 0, 0]
     self.juego  = 0
     self.promedios = []
+    self.items_cordenates = []
     self.ai_reward = 0
 
   def reset(self):
@@ -395,28 +374,63 @@ class NNAgent(Agent):
     enemy_completed_barrackses = self.get_enemy_completed_units_by_type(
         obs, units.Terran.Barracks) #barracas de los enemigos terminadas
     enemy_marines = self.get_enemy_units_by_type(obs, units.Terran.Marine) #MArines enemigos.
-    
-    return (len(command_centers), #0
-            len(scvs),  #1
-            len(idle_scvs), #2
-            len(supply_depots), #3
-            len(completed_supply_depots), #4
-            len(barrackses), #5
-            len(completed_barrackses), #6
-            len(marines), #7
-            queued_marines, #8
-            free_supply, #9
+    # cordenas x,  }{} y
+    """
+    self.items_cordenates =[command_centers.x, # 0
+                            command_centers.y, # 1
+                            scvs.x, # 2
+                            scvs.y, # 3
+                            idle_scvs.x, # 4
+                            idle_scvs.y, # 5
+                            supply_depots.x, # 6
+                            supply_depots.y, # 7
+                            completed_supply_depots.x, # 8
+                            completed_supply_depots.y, # 9
+                            barrackses.x, # 10
+                            barrackses.y, # 11
+                            completed_barrackses.x, # 12
+                            completed_barrackses.y, # 13
+                            marines.x, # 14
+                            marines.y, # 15
+                            enemy_command_centers.x, # 16
+                            enemy_command_centers.y, # 17
+                            enemy_scvs.x, # 18
+                            enemy_scvs.y, # 19
+                            enemy_idle_scvs.x, # 20
+                            enemy_idle_scvs.y, # 21
+                            enemy_supply_depots.x, # 22
+                            enemy_supply_depots.y, # 23
+                            enemy_completed_supply_depots.x, # 24
+                            enemy_completed_supply_depots.y, # 25
+                            enemy_barrackses.x, # 26
+                            enemy_barrackses.y, # 27
+                            enemy_completed_barrackses.x, # 28
+                            enemy_completed_barrackses.y, # 29
+                            enemy_marines.x, # 30
+                            enemy_marines.y] # 31
+    """
+    #data, normalized
+    return (len(command_centers)/COMANDCENTERS, #0
+            len(scvs)/SCVS_NUM,  #1
+            len(idle_scvs)/SCVS_NUM, #2
+            len(supply_depots)/BUILDINGS, #3
+            len(completed_supply_depots)/BUILDINGS, #4
+            len(barrackses)/BUILDINGS, #5
+            len(completed_barrackses)/BUILDINGS, #6
+            len(marines)/MARINES_NUM, #7
+            queued_marines/MARINES_NUM, #8
+            free_supply/SUPPLY, #9
             can_afford_supply_depot, #10
             can_afford_barracks, #11
             can_afford_marine, #12
-            len(enemy_command_centers), #13
-            len(enemy_scvs), #14
-            len(enemy_idle_scvs), #15
-            len(enemy_supply_depots), #16
-            len(enemy_completed_supply_depots), #17
-            len(enemy_barrackses), #18
-            len(enemy_completed_barrackses), #19
-            len(enemy_marines)) #Se regresan todos nuestros valores necesarios. #20
+            len(enemy_command_centers)/COMANDCENTERS, #13
+            len(enemy_scvs)/SCVS_NUM, #14
+            len(enemy_idle_scvs)/SCVS_NUM, #15
+            len(enemy_supply_depots)/BUILDINGS, #16
+            len(enemy_completed_supply_depots)/BUILDINGS, #17
+            len(enemy_barrackses)/BUILDINGS, #18
+            len(enemy_completed_barrackses)/BUILDINGS, #19
+            len(enemy_marines)/MARINES_NUM) #Se regresan todos nuestros valores necesarios. #20
 
   def update_reward(self,prev_obs, current_obs):
 
@@ -438,7 +452,7 @@ class NNAgent(Agent):
     
     if current_obs[ITEM.CAN_AFFORD_MARINE] or current_obs[ITEM.QUEUED_MARINES]:
       self.ai_reward+=1
-    if current_obs[ITEM.SUPPLY_DEPOTS_LEN] > current_obs[ITEM.SUPPLY_DEPOTS_LEN]:
+    if current_obs[ITEM.SUPPLY_DEPOTS_LEN] > prev_obs[ITEM.SUPPLY_DEPOTS_LEN]:
       self.ai_reward+=1
     if current_obs[ITEM.BARRACKSES_LEN] > prev_obs[ITEM.BARRACKSES_LEN]:
       self.ai_reward+=1
