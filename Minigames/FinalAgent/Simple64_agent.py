@@ -10,7 +10,7 @@ import math
 from inteligencia import *
 from pathlib import Path
 from Enums_and_Data import *
-
+from csvFileData import *
 
 
 
@@ -482,9 +482,15 @@ class NNAgent(Agent):
     self.previous_action = action
 
     if obs.last():
-      if self.episodes % 100 == 0 and self.episodes !=0:
+      for i in range (13):
+        self.scores[i] = obs.observation['score_cumulative'][i]
+      
+      CSVFileData(self.episodes,obs.reward,self.scores)
+
+      print("current score: "+ str(self.scores))
+
+      if self.episodes % 3 == 0 and self.episodes !=0:
         T.save(self.NN_net.Q.state_dict(), f"modelo{self.episodes//100}.pth")
-      self.juego += 1
 
     return getattr(self, self.actions[action])(obs)
 
