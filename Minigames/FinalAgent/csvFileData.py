@@ -34,6 +34,6 @@ def CSVFileData(ep,r,s):
   else:
     #df = pd.read_csv(ruta)
     df.to_csv(ruta, mode='a', index=False , header=False)
-    print("Añadido")
+    print("ADD CSV FILE")
 
 #CSVFileData(5,0,1500)
