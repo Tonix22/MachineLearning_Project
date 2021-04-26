@@ -116,12 +116,14 @@ class Agent(base_agent.BaseAgent):
   def build_supply_depot(self, obs):
     supply_depots = self.get_my_units_by_type(obs, units.Terran.SupplyDepot)
     scvs = self.get_my_units_by_type(obs, units.Terran.SCV)
-    if (len(supply_depots) < 2 and obs.observation.player.minerals >= 100 and
+    if (len(supply_depots) < 3 and obs.observation.player.minerals >= 100 and
         len(scvs) > 0):
       if(len(supply_depots) == 0):
-        supply_depot_xy = (22, 26) if self.base_top_left else (35, 42)
-      else:
+        supply_depot_xy = (16, 26) if self.base_top_left else (40, 42)
+      elif(len(supply_depots) == 1):
         supply_depot_xy = (19, 26) if self.base_top_left else (38, 42)
+      elif(len(supply_depots) == 2):
+        supply_depot_xy = (19, 28) if self.base_top_left else (42, 40)
 
       distances = self.get_distances(obs, scvs, supply_depot_xy)
       scv = scvs[np.argmin(distances)]
@@ -137,28 +139,30 @@ class Agent(base_agent.BaseAgent):
     cmdCenter = [unit for unit in obs.observation.raw_units
             if unit.unit_type == units.Terran.CommandCenter 
             and unit.alliance == features.PlayerRelative.SELF]
-    #list of positions
-    vespeneDist = list()
-    for i in range(len(vespene)):
-      d=math.sqrt(((vespene[i].x - cmdCenter[0].x)**2 + ((vespene[i].y -  cmdCenter[0].y)**2)))
-      vespeneDist.append(d)
-    #from list, get the index of smallest value
-    minDistIndex= np.argmin(vespeneDist) #index of min value
-    vespene = vespene[minDistIndex]
-    ##
+    
+    if(len(cmdCenter) > 0):
+      #list of positions
+      vespeneDist = list()
+      for i in range(len(vespene)):
+        d=math.sqrt(((vespene[i].x - cmdCenter[0].x)**2 + ((vespene[i].y -  cmdCenter[0].y)**2)))
+        vespeneDist.append(d)
+      #from list, get the index of smallest value
+      minDistIndex= np.argmin(vespeneDist) #index of min value
+      vespene = vespene[minDistIndex]
+      ##
 
-    #vespene = vespene[0]
+      #vespene = vespene[0]
 
-    refinerys = self.get_my_units_by_type(obs, units.Terran.Refinery)
-    scvs = self.get_my_units_by_type(obs, units.Terran.SCV)
+      refinerys = self.get_my_units_by_type(obs, units.Terran.Refinery)
+      scvs = self.get_my_units_by_type(obs, units.Terran.SCV)
 
-    if (len(refinerys) == 0 and obs.observation.player.minerals >= 100 and
-        len(scvs) > 0):
-      refinery_xy = (vespene.x, vespene.y)
-      distances = self.get_distances(obs, scvs, refinery_xy)
-      scv = scvs[np.argmin(distances)]
-      return actions.RAW_FUNCTIONS.Build_Refinery_pt(
-          "now", scv.tag, vespene.tag) #vespene[29]
+      if (len(refinerys) == 0 and obs.observation.player.minerals >= 100 and
+          len(scvs) > 0):
+        refinery_xy = (vespene.x, vespene.y)
+        distances = self.get_distances(obs, scvs, refinery_xy)
+        scv = scvs[np.argmin(distances)]
+        return actions.RAW_FUNCTIONS.Build_Refinery_pt(
+            "now", scv.tag, vespene.tag) #vespene[29]
     return actions.RAW_FUNCTIONS.no_op()
     
   def build_barracks(self, obs):
@@ -166,12 +170,14 @@ class Agent(base_agent.BaseAgent):
         obs, units.Terran.SupplyDepot)
     barrackses = self.get_my_units_by_type(obs, units.Terran.Barracks)
     scvs = self.get_my_units_by_type(obs, units.Terran.SCV)
-    if (len(completed_supply_depots) > 0 and len(barrackses) < 2 and 
+    if (len(completed_supply_depots) > 0 and len(barrackses) < 3 and 
         obs.observation.player.minerals >= 150 and len(scvs) > 0):
       if(len(barrackses) == 0):
-        barracks_xy = (22, 21) if self.base_top_left else (35, 45)
+        barracks_xy = (22, 21) if self.base_top_left else (35, 42)
       if(len(barrackses) == 1):
-        barracks_xy = (22, 24) if self.base_top_left else (38, 40)
+        barracks_xy = (22, 24) if self.base_top_left else (35, 45)
+      if(len(barrackses) == 2):
+        barracks_xy = (22, 27) if self.base_top_left else (35, 48)
 
       if(len(scvs) > 3):
         scv = scvs[random.randint(0, 3)]
@@ -205,7 +211,7 @@ class Agent(base_agent.BaseAgent):
     scvs = self.get_my_units_by_type(obs, units.Terran.SCV)
     marines    = self.get_my_units_by_type(obs, units.Terran.Marine)
 
-    if (len(scvs) <= 13 ) :
+    if (len(scvs) <= 20 ) :
       completed_comandCenter = self.get_my_completed_units_by_type(
           obs, units.Terran.CommandCenter)
 
@@ -486,9 +492,9 @@ def main(unused_argv):
     model.load_state_dict(T.load("modelo"+str(numModel)+".pth"))#if not fails 
     #model.load_state_dict(path)
     model.eval()
-    
-  agent2 = RandomAgent()
-  #agent2 = PacifistaAgent()
+
+  #agent2 = RandomAgent()
+  agent2 = PacifistaAgent()
   try:
     with sc2_env.SC2Env(
         map_name="Simple64",
@@ -502,7 +508,7 @@ def main(unused_argv):
             raw_resolution=64,
         ),
         step_mul=5,
-        disable_fog=False,
+        disable_fog=True,
         visualize=True,
     ) as env:
       run_loop.run_loop([agent1, agent2], env, max_episodes=10000)
