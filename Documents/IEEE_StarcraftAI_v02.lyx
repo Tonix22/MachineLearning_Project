@@ -1,0 +1,2454 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass IEEEtran
+\begin_preamble
+% for subfigures/subtables
+\usepackage[caption=false,font=footnotesize]{subfig}
+\usepackage{algorithm,algpseudocode}
+\usepackage{helvet}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{forest}
+\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\baselinestretch}{1.5} 
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    bookmarks=true,
+}
+
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    otherkeywords={mkdir,cmake,make,git,sudo,bladeRF-cli,ad9361}
+}
+
+\lstset{style=mystyle}
+\definecolor{folderbg}{RGB}{124,166,198}
+\definecolor{folderborder}{RGB}{110,144,169}
+
+\def\Size{4pt}
+\tikzset{
+  folder/.pic={
+    \filldraw[draw=folderborder,top color=folderbg!50,bottom color=folderbg]
+      (-1.05*\Size,0.2\Size+5pt) rectangle ++(.75*\Size,-0.2\Size-5pt);  
+    \filldraw[draw=folderborder,top color=folderbg!50,bottom color=folderbg]
+      (-1.15*\Size,-\Size) rectangle (1.15*\Size,\Size);
+  }
+}
+\end_preamble
+\options journal, onecolumn
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command bibtex
+\index_command default
+\float_placement tbh
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Your Title"
+\pdf_author "Your Name"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered true
+\pdf_bookmarksopen true
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle false
+\pdf_quoted_options "pdfpagelayout=OneColumn, pdfnewwindow=true, pdfstartview=XYZ, plainpages=false"
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Artificial Intelligence Agents for StarCraft 2
+\end_layout
+
+\begin_layout Author
+Carlos Cardenas-Ruiz, Emilio Tonix-Gleason, and
+\begin_inset space ~
+\end_inset
+
+Julia Rodriguez-Abud
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Carlos Cardenas-Ruiz is with the Department of Computater Science, Cinvestav,
+ Guadalajara, México, e-mail: 
+\begin_inset CommandInset href
+LatexCommand href
+target "carlos.cardenas@cinvestav.mx"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Emilio Tonix-Gleason is with the Department of Computater Science, Cinvestav,
+ Guadalajara, México, e-mail: 
+\begin_inset CommandInset href
+LatexCommand href
+target "emilio.tonix@cinvestav.mx"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Julia Rodriguez-Abud is with the Department of Computater Science, Cinvestav,
+ Guadalajara, México, e-mail: 
+\begin_inset CommandInset href
+LatexCommand href
+target "julia.rodriguez@cinvestav.mx"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Special Paper Notice
+Artificial Intelligence
+\end_layout
+
+\begin_layout Abstract
+This document describes a series of projects developed for the 2021 Cinvestav
+ Guadalajara Machine Learning class given by Dr.
+ Andres Mendez Vazquez.
+ The course is comprised of three main parts: searching algorithms, bayesian
+ networks, and multilayer perceptrons.
+ The aim was to develop a StarCraft AI agent using the PySC2 Python framework.
+ In total 5 agents were developed, 3 of which were developed for minimaps
+ (maps with clear and small objectives) and the rest for the simple 64 map
+ (a small map that actually emulates a normal game with all its components).
+ Most agents had good results although they were not perfect implementations,
+ as our time was quite limited and the learning curve for PySC2 was steep.
+ Nevertheless, hopefully our learning process will help others going through
+ the same path by using our documentation and github code as reference material.
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Keywords
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Subsection
+Installation
+\end_layout
+
+\begin_layout Standard
+The easiest way to get PySC2 is through a pip install command:
+\end_layout
+
+\begin_layout Standard
+python 2.7
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=bash]
+\end_layout
+
+\begin_layout Plain Layout
+
+$ pip install pysc2
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+python 3.X
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=bash]
+\end_layout
+
+\begin_layout Plain Layout
+
+$ pip3 install pysc2
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For more info, templates and documentation on PySC2, visit the 
+\begin_inset CommandInset href
+LatexCommand href
+name "website"
+target "https://github.com/deepmind/pysc2"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+About PySC2
+\end_layout
+
+\begin_layout Standard
+PySC2 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "vinyals2017starcraft"
+literal "true"
+
+\end_inset
+
+ is a non-official Deepmind product commonly used for machine learning competiti
+ve programming.
+ It is a multiplatform python framework that allows reading and writing
+ of StarCraft II data.
+ This allows the implementation of automatic strategies based on learning
+ algorithms.
+ 
+\end_layout
+
+\begin_layout Subsection
+Workflow 
+\end_layout
+
+\begin_layout Standard
+To develop and produce our project we used 
+\begin_inset CommandInset href
+LatexCommand href
+name "gitflow strategy"
+target "https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow"
+literal "false"
+
+\end_inset
+
+.
+ This allowed us to split tasks in batches, which are treated as features
+ in the code implementation.
+ In Git we used branching and merging to do parallel work and code review.
+ When each task was completed, a branching merge was done.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+GitFlow 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename gitflow.png
+	lyxscale 70
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Roadmap
+\end_layout
+
+\begin_layout Standard
+We used the DevOps methodology, which focuses on bringing the operations
+ lifecycle into the same agile experience as the development teams.
+ When adopting the DevOps philosophy the team remains responsible for the
+ release during the entire lifecycle of the product.
+ Organization and planning were done using a Kanban board.
+ And the roadmap used for the project was done in an iterative way with
+ the following steps:
+\end_layout
+
+\begin_layout Enumerate
+Choosing StartCraftII map (or minigame)
+\end_layout
+
+\begin_layout Enumerate
+Understanding the problem
+\end_layout
+
+\begin_layout Enumerate
+Planning a solution with the course tools.
+\end_layout
+
+\begin_layout Enumerate
+Designating tasks and features
+\end_layout
+
+\begin_layout Enumerate
+Coding and doing of individual tasks
+\end_layout
+
+\begin_layout Enumerate
+Merging and code reviewing
+\end_layout
+
+\begin_layout Enumerate
+Testing
+\end_layout
+
+\begin_layout Enumerate
+Releasing git code
+\end_layout
+
+\begin_layout Enumerate
+Showing the product and the results for final review and feedback to the
+ teacher
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Kanban board
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Canvanboard.png
+	lyxscale 70
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Uninformed Search
+\end_layout
+
+\begin_layout Subsection
+Beacon Agent
+\end_layout
+
+\begin_layout Standard
+A map with 1 Marine and 1 Beacon.
+ Rewards are earned by moving the marine to the beacon.
+ Whenever the Marine earns a reward for reaching the Beacon, the Beacon
+ is teleported to a random location (at least 5 units away from Marine).
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Initial State
+\end_layout
+
+\begin_layout Standard
+\noindent
+1 Marine at random location (unselected) 1 Beacon at random location (at
+ least 4 units away from Marine)
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Rewards
+\end_layout
+
+\begin_layout Standard
+\noindent
+Marine reaches Beacon: +1
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+End Condition
+\end_layout
+
+\begin_layout Standard
+\noindent
+Time elapsed
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Time Limit
+\end_layout
+
+\begin_layout Standard
+\noindent
+120 seconds 
+\end_layout
+
+\begin_layout Subsection
+Mesh
+\end_layout
+
+\begin_layout Standard
+Map is shown in a 64x64 array fashion, this is equivalent to 4K elements
+ to compare and analyse for any recursive algorithm.
+ This means it will significantly underperform the user expirience.
+ It was done a quantisationon of bigger grids as a result of doing less
+ iteration of the algorithms.
+ For example, if we originaly had a grid of 64X64 , then we could transform
+ it to 8x8 grid.
+ 
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename mapgrid.png
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Grid in the map 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Iterative Deepening Search (IDS)
+\end_layout
+
+\begin_layout Standard
+Exploration node expansion is limited by the neighborads in an straight
+ forward manner.
+ Only the first exploration check all neightborads.
+ However the idea is to avoid repeating nodes, in this way we could have
+ a faster solution using dynamic programing.
+ In the image bellow, is show the diagram of how expansion is exploring
+ node.
+ Note that mesh help us to reduce work becuase we don't check each pixel
+ of the map, only a subsample steped.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename explorationmeshIDF.png
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mesh exploration 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Bellman Ford Implicit (BFI)
+\end_layout
+
+\begin_layout Standard
+This Algorithm uses a closed/open logic, to explored the nodes, it is quite
+ similar to A*.
+ The difference is that this method doesn't has an heuristic, we just only
+ used ecludian distance to choose de shortest path.
+ It is a dymanic programing solution, it cuts when the goal is reached.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename bellmanfordimplicit.png
+	lyxscale 70
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mesh Belman ford
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Conclusion
+\end_layout
+
+\begin_layout Standard
+Both methods were fast in proportion with user expirience.
+ There were not so delay, and the game was totaly functional.
+ In this first stage of the project we had to deal with pysc2.
+ So there was also some time invested in this task.
+ The main idea was to familiriazed with the framework.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Informed Search
+\end_layout
+
+\begin_layout Subsection
+CollectMineralShards
+\end_layout
+
+\begin_layout Standard
+Description
+\end_layout
+
+\begin_layout Standard
+A map with 2 Marines and an endless supply of Mineral Shards.
+ Rewards are earned by moving the Marines to collect the Mineral Shards,
+ with optimal collection requiring both Marine units to be split up and
+ moved independently.
+ Whenever all 20 Mineral Shards have been collected, a new set of 20 Mineral
+ Shards are spawned at random locations (at least 2 units away from all
+ Marines).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Collect Minerals Map
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename mapmineralrs.png
+	lyxscale 80
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Brush
+\end_layout
+
+\begin_layout Standard
+It generates a squared matrix with a Gaussian distribution.
+ We call the output as heightmap.
+ The idea of the heightmap is to generate deep used in the HillClimbing
+ algorithms, as a point on the new mapping is higher, the density of minerals
+ grows too.
+ 
+\end_layout
+
+\begin_layout Itemize
+Map - Matrix with the size of our game screen (initialized with 0s) 
+\end_layout
+
+\begin_layout Itemize
+We can stamp out our brush 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Add the values of our brush over a coord in Map 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+If we stamp several times we get our map with concentration point
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Height map
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename mayaheight.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename lateral.png
+	lyxscale 80
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+A*
+\end_layout
+
+\begin_layout Standard
+This version of A* try to find a next first maximum local only using a heuristic
+ based in the value of coordinates of the mesh.
+ The real problem is that needs a lot of calculus when the map is almost
+ empty, because there are a lot of “plain ground” and that make difficult
+ to find the maximum.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Upper view of heights used in A* 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename uperrviewAstar.png
+	lyxscale 50
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+HillClimbing and Simulated Annealing
+\end_layout
+
+\begin_layout Standard
+Using the height map, we could procced to find a max height point, as a
+ best option to gather minerals.
+ This is hill climbing algorithm, however a problem is that we could get
+ stuck in a local maxima, so our strategy is to implement a chance given
+ by a probability distribution, in this case we use a temperature boltzmann
+ distribution 
+\begin_inset Formula $e^{\text{\frac{\text{∆}E}{T}}}>rand(0,1)$
+\end_inset
+
+ .
+ The temperature will decrease by an alpha factor inside a loop.
+ For tuning the alpha we did the following equations.
+ 
+\begin_inset Formula $T_{0}=inital\thinspace temperature$
+\end_inset
+
+ , 
+\begin_inset Formula $a=decreasing\thinspace\thinspace factor$
+\end_inset
+
+ , 
+\begin_inset Formula $n=iterations$
+\end_inset
+
+, 
+\begin_inset Formula $T_{f}=final\thinspace temperature$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $T_{0}*a^{n}=Tf$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $a=e^{\frac{ln(\frac{T_{f}}{T_{0}})}{n}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As shown below there is an application of the simulated annealing, the chance
+ part is designed with the equation above.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Simulated Annealing
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=python]
+\end_layout
+
+\begin_layout Plain Layout
+
+Algo(simulated annealing):     
+\end_layout
+
+\begin_layout Plain Layout
+
+	for Temp=Tmax to Tmin:
+\end_layout
+
+\begin_layout Plain Layout
+
+		#************CURRENT***********#
+\end_layout
+
+\begin_layout Plain Layout
+
+		Energy_current = E(Current) # Function cost at given point
+\end_layout
+
+\begin_layout Plain Layout
+
+		#************NEXT***********#         
+\end_layout
+
+\begin_layout Plain Layout
+
+		N = Next(c) # go for next neighbour         
+\end_layout
+
+\begin_layout Plain Layout
+
+		Energy_Flanders = E(Next) # Function cost at Flanders                
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+		#************DELTA***********#         
+\end_layout
+
+\begin_layout Plain Layout
+
+		Delta_Energy = Energy_Flanders - Energy_current                  
+\end_layout
+
+\begin_layout Plain Layout
+
+		#************UPDATE***********#         
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(Delta_Energy >0): # if positive              
+\end_layout
+
+\begin_layout Plain Layout
+
+			Current = Next               
+\end_layout
+
+\begin_layout Plain Layout
+
+		#************CHANCE***********#         
+\end_layout
+
+\begin_layout Plain Layout
+
+		#Delta was negative, lets give another chance and          
+\end_layout
+
+\begin_layout Plain Layout
+
+		#throw a probabilistic shot, maybe we update current          
+\end_layout
+
+\begin_layout Plain Layout
+
+		else if (e^(Delta_Energy/Temp) > rand(0,1)):      
+\end_layout
+
+\begin_layout Plain Layout
+
+			Current = Next
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Conclusion
+\end_layout
+
+\begin_layout Standard
+In this stage it was found that Hill climibing was faster than A*, this
+ could be because the height brush, was helpful to reduce the iterations
+ in the search, get the local optimal point was cheaper than comparing all
+ nodes like A*, maybe A* is more acurate but the trade off is the time perfomanc
+e.
+  
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Min Max and Probabilistic
+\end_layout
+
+\begin_layout Subsection
+FindAndDefeatZerglings
+\end_layout
+
+\begin_layout Subsubsection
+Description
+\end_layout
+
+\begin_layout Standard
+A map with 3 Marines and an endless supply of stationary Zerglings.
+ Rewards are earned by using the Marines to defeat Zerglings, with the optimal
+ strategy requiring a combination of efficient exploration and combat.
+ Whenever all 25 Zerglings have been defeated, a new set of 25 Zerglings
+ are spawned at random locations (at least 9 units away from all Marines
+ and at least 5 units away from all other Zerglings).
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Initial State 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+3 Marines at map center (preselected) 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+2 Zerglings spawned at random locations inside player's vision range (between
+ 7.5 and 9.5 units away from map center and at least 5 units away from all
+ other Zerglings) 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+23 Zerglings spawned at random locations outside player's vision range (at
+ least 10.5 units away from map center and at least 5 units away from all
+ other Zerglings) 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Rewards 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Zergling defeated: +1 Marine defeated: -1 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+End Conditions Time elapsed All Marines defeated 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Time Limit 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+180 seconds 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Additional Notes 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Fog of War enabled 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Camera movement required (map is larger than single-screen) 
+\end_layout
+
+\begin_layout Subsection
+Alpha-beta Prunning / Minmax 
+\end_layout
+
+\begin_layout Standard
+It was reused the children matrix of the map (Figure 4).
+ But this time it is analysed the cost of each point depending of the not
+ foged view.
+ Estimating the chance of win or lose, it is weigh with 1 win(Zerling death)
+ , 0 tie(Zerling and Marine death) and -1 lose(Marine death).
+ Knowing this information it was built an alpha beta prunning algorithm.
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename alphabetaprinning.png
+	lyxscale 70
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Alpha beta prunning code
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Cost function with Heuristic 
+\end_layout
+
+\begin_layout Standard
+Given the minimap and the explored ares, there is a shadowed grayscale look
+ of the minimap.
+ The info is provided in the following way : {0: Not seen before, 1: Seen
+ before, but not visible, 2: Visible}.
+ With this 3 states, it was calculated the enemies in state 1 and 2.
+ Knowing this is calculated a density of enemies in relation with each shaded
+ area, in this way it is given weights to each array of cordenates in state
+ 1 and 2.
+ Finally the distance of unexplored areas is taken and added to heuristic
+ in an euclidan way.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename heuristicshadedmap.png
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Heristic shaded map 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Conclusion
+\end_layout
+
+\begin_layout Standard
+In this particular case, alpha beta prunning didn't work because it is a
+ real time game, so the response of the system is not quite acurate, system
+ responds very slow to atacks, and just in some seconds all maries were
+ death.
+ In the other hand the heuristic one, perfoms better than the other, but
+ its main problem was that the marines kill themselves when they almost
+ explored the map.
+ This could be because the set of points of the unexplored area where to
+ close, and they atack themselves.
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Bayesian Networks
+\end_layout
+
+\begin_layout Subsection
+Map Description 
+\end_layout
+
+\begin_layout Standard
+\noindent
+This map is consist in a map medium map size with four camps that contains
+ minerals and vespene gas.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+This map is for two players that try to destroy each other.
+ They are two agents against each other.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Initial State 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+1 command center 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+12 SCV 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Rewards 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Win and keep your live 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+End Conditions 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Destroy the enemy 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Time Limit 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+No 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Additional Notes 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+We manually activated fog of war And visualize features 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Map and characters overview
+\end_layout
+
+\begin_layout Standard
+This map is a little more complex than others, because it could have more
+ types of characters.
+ SCV, are used to gather minerals, with this minerals it could be build
+ supply depots, then this ones are used to build barracks, with the barracks
+ the marines are built, and finally with marines attack is possible.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename mapoverviewsimple64.png
+	lyxscale 70
+	scale 50
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename diagram.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Map overview simple 64
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The main idea is to generate more marines as possible, as soon as one of
+ them explore the map and then the others atack the enemy base.
+ However the reaper is an ideal character to explore because could fly and
+ skip mountains.
+ So this character can avoid go around the mountains and hills, so he do
+ a faster work.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename characters in simple64.png
+	lyxscale 60
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Characters in simple 64
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Bayesian newtork scouting 
+\end_layout
+
+\begin_layout Standard
+The pourpose of the bayesian network is to control the scouting, in others
+ words, explore and find enemy base.
+ This is a strategy that comes from micromanagment as a branch of RST AI
+ workflow.
+ Based on the manhatan distance a scout character will take a desition in
+ only 4 possible ways.
+ To do things simpler this task uses a reaper , that can skip mountains
+ and hills.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+Firstly, we emulate our bayesian network in a GUI (
+\series bold
+unbbayes-4.22.18
+\series default
+).
+ Secondly we pass our net to the 
+\series bold
+Pgmpy
+\series default
+ library that is in python.
+ Both softwares allow you to do belief propagation depending on the inputs
+ given to the bayesian net.
+ Finally it was done the integration with the simple64 commands and the
+ 
+\series bold
+Pgmpy
+\series default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename dagbayesian64.png
+	lyxscale 70
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename valuesbayesian.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Scouting bayesian network dag and its probalities
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename python pgmpy diagram.png
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Pgmpy python code
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Reduce overfiting
+\end_layout
+
+\begin_layout Standard
+Map is represented as a minimap in the pysc2 framework, we use a feature
+ of the minimap called pathable.
+ That is the map that characters could used to move around, dark areas are
+ 0 and 1 white ones, white areas are where characters is allow to walk (pathable
+).
+ However data is presented in a fashion of 64x64 array, so to reduce the
+ calculations it was a subsampled data with a grid, that reduces data size,
+ enconding data in a shorter array of 8X8.
+ This allow us to do less belief prograpagtions in the bayesian network.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename gridforbayesiannet.png
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Grid bayesian network
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Results
+\end_layout
+
+\begin_layout Standard
+After grid processing and bayesian network integration, the scouter finally
+ reach the desired area.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename resultsbayesian.png
+	lyxscale 70
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Bayesian working
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Conlusions
+\end_layout
+
+\begin_layout Standard
+Designing Bayesian Networks can be a hard job.
+ Assigning the probabilities is not so intuitive for humans and training
+ is required to help the Bayesian Network to work optimally.
+ Bayesian Networks could be mixed with other strategies, like A* and Alpha
+ Beta pruning, but before you may have a good software planing to do.
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Reinforcement learning and pytorch
+\end_layout
+
+\begin_layout Subsection
+Map Description 
+\end_layout
+
+\begin_layout Standard
+A map with 9 Marines on the opposite side from a group of 6 Zerglings and
+ 4 Banelings.
+ Rewards are earned by using the Marines to defeat Zerglings and Banelings.
+ Whenever all Zerglings and Banelings have been defeated, a new group of
+ 6 Zerglings and 4 Banelings is spawned and the player is awarded 4 additional
+ Marines at full health, with all other surviving Marines retaining their
+ existing health (no restore).
+ Whenever new units are spawned, all unit positions are reset to opposite
+ sides of the map.
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Initial State 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+9 Marines in a vertical line at a random side of the map (preselected) 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+6 Zerglings and 4 Banelings in a group at the opposite side of the map from
+ the Marines 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Rewards 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Zergling defeated: +5 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Baneling defeated: +5 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Marine defeated: -1 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+End Conditions 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Time elapsed 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+All Marines defeated 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Time Limit 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+120 seconds
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Additional Notes 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Fog of War disabled 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+No camera movement required (single-screen) 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+This map and DefeatRoaches are currently the only maps in the set that can
+ include an automatic, mid-episode state change for player-controlled units.
+ The Marine units are automatically moved back to a neutral position (at
+ a random side of the map opposite the Roaches) when new units are spawned,
+ which occurs whenever the current set of Zerglings and Banelings is defeated.
+ This is done in order to guarantee that new units do not spawn within combat
+ range of one another.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename bannelinsandzerlings.png
+	lyxscale 70
+	scale 40
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Bannelings and zerlings
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Defining Net
+\end_layout
+
+\begin_layout Standard
+For the net is used pytorch as the main framework.
+ During the game we will train a neuronal net of 3 layers.
+ Input with 6 Neurons, hidden with 64 and ouput with 2.
+ The input neruron came from the state that RAW data of minimap gives.
+ The input layer is defined as follows : {len (self.marines), marines_hp,
+ len (self.zergling), zergling_hp, len (self.baneling), baneling_hp]}, and
+ output layer is : {0 (zerling) and 1(banneling)}, this ones are two type
+ of enemies that has different attack properties.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename neuronalnetpythonnn.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Python NN code
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Defining EPOCHs
+\end_layout
+
+\begin_layout Standard
+Usally the marines will be defeat because zerlings and bannelings respawn,
+ the idea is to survive such as make the high score.
+ Once marines are defeat the system get the score and pass it to the net
+ in order to correct the weights and do better decitions.
+ In the image below it is shown, how the net is query to atack certain enemies,
+ note that there is a time increment in the atacking cycle, this ones one
+ provides sufficent respond time to the control system.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename epochs.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Epochs cycling
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Results and Runs
+\end_layout
+
+\begin_layout Standard
+The more epochs have passed, the better the score is.
+ It was tried with different learning rates.
+ And it was found that lr=.05 was the smoother.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename lr1curve_lr_02.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename lr1curve_lr_05.png
+	lyxscale 50
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename lr1curve_lr_01.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Learning rate curves
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Conclusions
+\end_layout
+
+\begin_layout Standard
+The pytorch framework seems to be friendly, as you don't have to worry about
+ some details and is also customizable.
+ The implementation of the network works correctly, and the target for the
+ next release is to integrate this one in the simple64
+\end_layout
+
+\begin_layout Section
+Final release
+\end_layout
+
+\begin_layout Subsection
+Map description
+\end_layout
+
+\begin_layout Subsection
+Strategy and implementation
+\end_layout
+
+\begin_layout Subsection
+Results
+\end_layout
+
+\begin_layout Subsection
+Conclusions
+\end_layout
+
+\begin_layout Section
+Conclusions
+\end_layout
+
+\begin_layout Standard
+...
+\end_layout
+
+\begin_layout Appendices
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Don't add text here!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Acknowlegments
+\end_layout
+
+\begin_layout Standard
+We thank Dr.
+ Andres Mendez Vazquez for being our mentor for the full length of the developme
+nt of this project.
+ We also thank M.Sc.
+ Luis Mario Ramírez Solis for helping us visualize the framework to use
+ at the beginning of this project.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Remember though that your final submission is supposed to have all the bibliogra
+phy entries embedded in the \SpecialChar LaTeX
+-file.
+ This means you eventually have to copy the .bbl file into the latex file
+ and remove the bibtex lines.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "IEEEabrv,IEEEexample,biblio00"
+options "IEEEtran"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Authors
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Biography without photo
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Carlos Cardenas-Ruiz
+\end_layout
+
+\end_inset
+
+ is a Computer Systems Engineer.
+ He has worked as a software developer and currently is pursuing his M.Sc.
+ at Cinvestav Guadalajara.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Biography without photo
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Emilio Tonix-Gleason
+\end_layout
+
+\end_inset
+
+ is a Computer Systems Engineer, He has worked as a software developer and
+ will soon be pursuing his M.Sc.
+ at Cinvestav Guadalajara.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Biography without photo
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Julia Rodriguez-Abud
+\end_layout
+
+\end_inset
+
+ has a Digital Arts major.
+ She has worked as a software developer and currently is pursuing her M.Sc.
+ at Cinvestav Guadalajara.
+ 
+\end_layout
+
+\end_body
+\end_document
