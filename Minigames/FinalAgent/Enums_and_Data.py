@@ -1,8 +1,8 @@
 from enum import IntEnum
 
 COMANDCENTERS = 5
-SCVS_NUM    = 50
-BUILDINGS   = 10 
+SCVS_NUM    = 20
+BUILDINGS   = 3 
 MARINES_NUM = 100 
 SUPPLY      = 200
 
@@ -27,7 +27,11 @@ class ITEM(IntEnum):
   ENEMY_SCVS_LEN              = 14, #14
   ENEMY_IDLE_SCVS_LEN         = 15, #15
   ENEMY_SUPPLY_DEPOTS_LEN     = 16, #16
-  ENEMY_COMPLETED_SUPPLY_DEPOTS_LEN = 17, #17
-  ENEMY_BARRACKSES_LEN              = 18, #18
-  ENEMY_COMPLETED_BARRACKSES_LEN    = 19, #19
+  ENEMY_COMPLETED_SUPPLY_DEPOTS_LEN = 17,#17
+  ENEMY_BARRACKSES_LEN              = 18,#18
+  ENEMY_COMPLETED_BARRACKSES_LEN    = 19,#19
   ENEMY_MARINES_LEN                 = 20 #20
+  ENEMY_MARAUDER                    = 21 #21
+  ENEMY_TECHLAB                     = 22 #22
+  MARAUDERS                         = 23 #23
+  TECHLABS                          = 24 #24

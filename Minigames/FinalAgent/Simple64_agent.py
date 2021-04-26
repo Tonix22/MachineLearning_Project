@@ -211,7 +211,7 @@ class Agent(base_agent.BaseAgent):
     scvs = self.get_my_units_by_type(obs, units.Terran.SCV)
     marines    = self.get_my_units_by_type(obs, units.Terran.Marine)
 
-    if (len(scvs) <= 20 ) :
+    if (len(scvs) <= SCVS_NUM ) :
       completed_comandCenter = self.get_my_completed_units_by_type(
           obs, units.Terran.CommandCenter)
 
@@ -301,7 +301,7 @@ class RandomAgent(Agent):
 class NNAgent(Agent):
   def __init__(self):
     super(NNAgent, self).__init__()
-    self.NN_net = nnq(21,11,0.33) # 21 data in , 6 actions
+    self.NN_net = nnq(25,11,0.33) # 21 data in , 6 actions
     self.new_game()
                       #0,1,2,3,4,5,6,7,8,9,10,11,12
     self.scores =     [0,0,0,0,0,0,0,0,0,0,0, 0, 0]
@@ -332,6 +332,9 @@ class NNAgent(Agent):
         obs, units.Terran.Barracks)# Se seleccionan las barracas completadas
     marines = self.get_my_units_by_type(obs, units.Terran.Marine) #Total de marines con los que se cuentan
     
+    marauders = self.get_my_units_by_type(obs, units.Terran.Marauder) 
+    TechLabs  = self.get_my_units_by_type(obs, units.Terran.BarracksTechLab)
+
     queued_marines = (completed_barrackses[0].order_length 
                       if len(completed_barrackses) > 0 else 0) #Regresa el total de soldados en cola de entrenamiento.
     
@@ -353,49 +356,18 @@ class NNAgent(Agent):
     enemy_completed_barrackses = self.get_enemy_completed_units_by_type(
         obs, units.Terran.Barracks) #barracas de los enemigos terminadas
     enemy_marines = self.get_enemy_units_by_type(obs, units.Terran.Marine) #MArines enemigos.
+    enemy_marauder = self.get_enemy_units_by_type(obs, units.Terran.Marauder) #MArines enemigos.
+    enemy_TechLab = self.get_enemy_units_by_type(obs, units.Terran.BarracksTechLab)
     # cordenas x,  }{} y
-    """
-    self.items_cordenates =[command_centers.x, # 0
-                            command_centers.y, # 1
-                            scvs.x, # 2
-                            scvs.y, # 3
-                            idle_scvs.x, # 4
-                            idle_scvs.y, # 5
-                            supply_depots.x, # 6
-                            supply_depots.y, # 7
-                            completed_supply_depots.x, # 8
-                            completed_supply_depots.y, # 9
-                            barrackses.x, # 10
-                            barrackses.y, # 11
-                            completed_barrackses.x, # 12
-                            completed_barrackses.y, # 13
-                            marines.x, # 14
-                            marines.y, # 15
-                            enemy_command_centers.x, # 16
-                            enemy_command_centers.y, # 17
-                            enemy_scvs.x, # 18
-                            enemy_scvs.y, # 19
-                            enemy_idle_scvs.x, # 20
-                            enemy_idle_scvs.y, # 21
-                            enemy_supply_depots.x, # 22
-                            enemy_supply_depots.y, # 23
-                            enemy_completed_supply_depots.x, # 24
-                            enemy_completed_supply_depots.y, # 25
-                            enemy_barrackses.x, # 26
-                            enemy_barrackses.y, # 27
-                            enemy_completed_barrackses.x, # 28
-                            enemy_completed_barrackses.y, # 29
-                            enemy_marines.x, # 30
-                            enemy_marines.y] # 31
-    """
+   
     #data, normalized
     return (len(command_centers)/COMANDCENTERS, #0
             len(scvs)/SCVS_NUM,  #1
             len(idle_scvs)/SCVS_NUM, #2
-            len(supply_depots)/BUILDINGS, #3
-            len(completed_supply_depots)/BUILDINGS, #4
-            len(barrackses)/BUILDINGS, #5
-            len(completed_barrackses)/BUILDINGS, #6
+            len(supply_depots)/3, #3
+            len(completed_supply_depots)/3, #4
+            len(barrackses)/3, #5
+            len(completed_barrackses)/3, #6
             len(marines)/MARINES_NUM, #7
             queued_marines/MARINES_NUM, #8
             free_supply/SUPPLY, #9
@@ -409,7 +381,11 @@ class NNAgent(Agent):
             len(enemy_completed_supply_depots)/BUILDINGS, #17
             len(enemy_barrackses)/BUILDINGS, #18
             len(enemy_completed_barrackses)/BUILDINGS, #19
-            len(enemy_marines)/MARINES_NUM) #Se regresan todos nuestros valores necesarios. #20
+            len(enemy_marines)/MARINES_NUM,
+            len(enemy_marauder)/20,
+            len(enemy_TechLab)/10,
+            len(marauders)/10,
+            len(TechLabs)/3) #Se regresan todos nuestros valores necesarios. #20
 
   def update_reward(self,prev_obs, current_obs):
 
@@ -417,15 +393,21 @@ class NNAgent(Agent):
     if  current_obs[ITEM.MARINES_LEN] < prev_obs[ITEM.MARINES_LEN] :
       self.ai_reward-=1
     if current_obs[ITEM.SCVS_LEN] < prev_obs[ITEM.SCVS_LEN] :
-      self.ai_reward-=1
+      self.ai_reward-=4
     if current_obs[ITEM.ENEMY_MARINES_LEN] > prev_obs[ITEM.ENEMY_MARINES_LEN]:
       self.ai_reward-=1
     if current_obs[ITEM.BARRACKSES_LEN] < prev_obs[ITEM.BARRACKSES_LEN]:
       self.ai_reward-=1
     if current_obs[ITEM.ENEMY_COMPLETED_SUPPLY_DEPOTS_LEN] > prev_obs[ITEM.ENEMY_COMPLETED_SUPPLY_DEPOTS_LEN]:
-      self.ai_reward-=1
+      self.ai_reward-=3
     if current_obs[ITEM.IDLE_SCVS_LEN] > prev_obs[ITEM.IDLE_SCVS_LEN]:
       self.ai_reward-=1
+    if current_obs[ITEM.ENEMY_BARRACKSES_LEN] > prev_obs[ITEM.ENEMY_BARRACKSES_LEN]  :
+      self.ai_reward-=1
+    if current_obs[ITEM.ENEMY_MARAUDER] > prev_obs[ITEM.ENEMY_MARAUDER]  :
+      self.ai_reward-=5
+    if current_obs[ITEM.ENEMY_TECHLAB] > prev_obs[ITEM.ENEMY_TECHLAB]  :
+      self.ai_reward-=5
 
     #POSITIVE REWARDS
     
@@ -443,6 +425,10 @@ class NNAgent(Agent):
       self.ai_reward+=1
     if current_obs[ITEM.ENEMY_SCVS_LEN] < prev_obs[ITEM.ENEMY_SCVS_LEN]:
       self.ai_reward+=1
+    if current_obs[ITEM.MARAUDERS] < prev_obs[ITEM.MARAUDERS]:
+      self.ai_reward+=5
+    if current_obs[ITEM.TECHLABS] < prev_obs[ITEM.TECHLABS]:
+      self.ai_reward+=5
 
   def step(self, obs):
     super(NNAgent, self).step(obs)
