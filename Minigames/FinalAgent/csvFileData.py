@@ -3,10 +3,10 @@ import pandas as pd
 from datetime import datetime
 import os 
 
-def CSVFileData(ep,r,s):
+def CSVFileData(ep,r,s,steps,mul):
   now = datetime.now()
   dt_string = now.strftime("%d_%m_%Y %Hh%Mmin%Sseg")
-  ruta = os.path.join(os.path.dirname(__file__),'Saved_v00.csv')
+  ruta = os.path.join(os.path.dirname(__file__),'Saved_v02.csv')
   
   data = {'time'     : [dt_string],
             'episode': [ep],
@@ -23,7 +23,8 @@ def CSVFileData(ep,r,s):
             'collection_rate_minerals' : [s[9]],
             'collection_rate_vespene'  : [s[10]],
             'spent_minerals' : [s[11]],
-            'spent_vespene'  : [s[12]]}
+            'spent_vespene'  : [s[12]],
+            'StepsInEpisode'  : [(steps*mul)-mul]}
 
 
             

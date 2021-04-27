@@ -310,6 +310,7 @@ class NNAgent(Agent):
     self.promedios = []
     self.items_cordenates = []
     self.ai_reward = 0
+    self.stepsnum = 0
 
   def reset(self):
     super(NNAgent, self).reset()
@@ -319,6 +320,7 @@ class NNAgent(Agent):
     self.base_top_left = None
     self.previous_state = None
     self.previous_action = None
+    self.stepsnum = 0
 
   def get_state(self, obs):
     scvs = self.get_my_units_by_type(obs, units.Terran.SCV) # Selección de de todos los robots utilizando la funsión por tipo
@@ -433,6 +435,7 @@ class NNAgent(Agent):
   def step(self, obs):
     super(NNAgent, self).step(obs)
 
+    self.stepsnum +=1
     self.ai_reward = 0 #ai reward
     state  = self.get_state(obs)
     action = self.NN_net.choose_action(state)
@@ -445,12 +448,12 @@ class NNAgent(Agent):
                         state)
     self.previous_state  = state
     self.previous_action = action
-
+    
     if obs.last():
       for i in range (13):
         self.scores[i] = obs.observation['score_cumulative'][i]
       
-      CSVFileData(self.episodes,obs.reward,self.scores)
+      CSVFileData(self.episodes,obs.reward,self.scores,self.stepsnum,stepmultiplier)
 
       print("current score: "+ str(self.scores))
 
@@ -465,6 +468,7 @@ class PacifistaAgent(Agent):
     super(PacifistaAgent, self).step(obs)
     return actions.FUNCTIONS.no_op()
 
+stepmultiplier=20
 def main(unused_argv):
   
   agent1 = NNAgent()
@@ -493,8 +497,8 @@ def main(unused_argv):
             use_raw_units=True,
             raw_resolution=64,
         ),
-        step_mul=5,
-        disable_fog=True,
+        step_mul=stepmultiplier,
+        disable_fog=False,
         visualize=True,
     ) as env:
       run_loop.run_loop([agent1, agent2], env, max_episodes=10000)
