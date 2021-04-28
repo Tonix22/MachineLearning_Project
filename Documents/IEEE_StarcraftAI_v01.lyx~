@@ -2316,7 +2316,21 @@ Conclusions
 The pytorch framework seems to be frendly, as you don't have to worry of
  some details, but in the same way is also customizable.
  The implementation of the network works correctly, and the target for the
- next release is to integrate this one in the simple64
+ next release is to integrate this one in the simple64.
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -2327,12 +2341,768 @@ Final release
 Map description
 \end_layout
 
-\begin_layout Subsection
-Strategy and implementation
+\begin_layout Standard
+\noindent
+This map is consist in a map medium map size with four camps that contains
+ minerals and vespene gas.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+This map is for two players that try to destroy each other.
+ They are two agents against each other.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Initial State 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+1 command center 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+12 SCV 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Rewards 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Win and keep your live 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+End Conditions 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Destroy the enemy 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Time Limit 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+No 
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Additional Notes 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+We manually activated fog of war And visualize features
 \end_layout
 
 \begin_layout Subsection
-Results
+Introduction
+\end_layout
+
+\begin_layout Standard
+For this stage we keep using reinforcement learning using pytorch, but now
+ the network should be in a more complex enviroment, where it has to deal
+ with exploring the map, fog of war, allies items, and enemy known items.
+ The input network data is given by the pysc2 framework.
+ It has the agent status of each unit and visible field, the ouput take
+ actions to do task related with certain dependencies.
+ For example build marines depends on food, and build supply depots dependens
+ on minerals.
+ To evalute the perfomance of our NN, it was tracked an score data at the
+ end of each game.
+ This data was not used for the reward, because in the strategy it was considere
+d other parameters for traing the NN.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="13" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+total score 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+idle_production_time
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+idle_worker_time
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+total value of units
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+total value structures
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+killed value units
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+killed value structures
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+collected minerals
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+collected vespene
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+collection rate minerals
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+collection rate vespene
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+11
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+spent minerals
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+spent vespene
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Scores for match
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In general it was used the RELU function as activation function, for each
+ layer, in total there are implemented 3 layers Input,Hidden and Output.
+ Input vary on the implementation of agent, hidden is 64 long and finally
+ output depends on implementation.
+ The random factor epsilon is .1, and will decrease over time.
+ The learing rate was constant at .33.
+ Finally we save the trained weights every 100 matchs.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename GenericNNclass.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename initiofclassNN.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Generic Class implementation 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Against random agent
+\end_layout
+
+\begin_layout Standard
+The nueron inputs and outpus are shown in the table below, note that all
+ data is normalized considering max possible size for item.
+ The NN is 21 input nuerons that are read from the pysc2 framework, then
+ 6 output nerons which represent the actions taken by the army.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align left
+\begin_inset Graphics
+	filename init class NN 1.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align left
+\begin_inset Graphics
+	filename inputsNNfinalParte1.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename ouputsNNpart1.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Inputs and outputs NN
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The neuronal network will fight agains a marine team with the same posible
+ actions as it, but the difference is that the enemy is a random agent,
+ at first sight it must get over it, but it takes 1000 trainings to almost
+ win every match.
+ At 4000 it changes it's strategy, it waits to produce more marines and
+ send them in groups to upgrade perfomance, once it reached that point the
+ agent stuck in the same winning point and strategy.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename marinesprotegiendobase.png
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Marines guarding the base
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+ The reward was given by data input gather from pysc2 framework, every time
+ machine has to decide, the feedback was given by weighted criteria, it
+ was compared the observations states, actual state versus previous one.If
+ enemy increases their units or items rewards is [-1], if all stills the
+ same[0], and if the marines kill enemies or have more resources[1].
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename reward1.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename positiverward1.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Reward 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Against Blizzard AI
+\end_layout
+
+\begin_layout Standard
+Blizzard AI is pretty good playing, it has different levels.
+ However medium is really hard, so it was thought to firstly analyse game
+ strategy in easy, it was observed that game uses other resources and items
+ that we was not using, so we decided to level up the complexity of the
+ network.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename dificult level.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Blizzard AI
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It was added to NN other factors, such as Vespene gas collection, and marauders
+ characters, which are stronger and bigger.
+ In the image below is shown the new inputs and ouputs added
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename addedinput.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename biggerinputNN.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Bigger NN
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+As final result our agent didn't won vs easy, it does against very_easy,
+ however between some matches it does a higher score.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename pasted1.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Score history
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -2373,10 +3143,6 @@ key "IEEEexample:beebe_archive"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-Second appendix
 \end_layout
 
 \begin_layout Section*
