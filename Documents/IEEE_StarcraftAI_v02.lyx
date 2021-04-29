@@ -626,23 +626,18 @@ Mesh
 \end_layout
 
 \begin_layout Standard
-Map is shown in a 64x64 array fashion, this is equivalent to 4K elements
- to compare and analyse for any recursive algorithm.
- This means it will significantly underperform the user expirience.
- It was done a quantisationon of bigger grids as a result of doing less
- iteration of the algorithms.
- For example, if we originaly had a grid of 64X64 , then we could transform
- it to 8x8 grid.
+The map is shown in a 64x64 array, giving a total of more than 4K data elements
+ to process by any recursive algorithm.
+ This would significantly underperform the user experience.
+ A quantization of this data was done with the purpose of doing less iterations.
+ For example, if we originally had a grid of 64x64, we could then transform
+ it to a 8x8 grid.
  
 \begin_inset Float figure
 placement H
 wide false
 sideways false
-status collapsed
-
-\begin_layout Plain Layout
-
-\end_layout
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -655,7 +650,7 @@ status collapsed
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Grid in the map 
+Grid on the map 
 \end_layout
 
 \end_inset
@@ -689,15 +684,15 @@ Iterative Deepening Search (IDS)
 \end_layout
 
 \begin_layout Standard
-Exploration node expansion is limited by the neighborads in an straight
- forward manner.
- Only the first exploration check all neightborads.
- However the idea is to avoid repeating nodes, in this way we could have
- a faster solution using dynamic programing.
- In the image bellow, is show the diagram of how expansion is exploring
- node.
- Note that mesh help us to reduce work becuase we don't check each pixel
- of the map, only a subsample steped.
+The node exploration is limited to the expansion of each individual node
+ to its immediate neighbors in a straightforward way.
+ The diagram below shows how the expansion of the nodes is done.
+ The algorithm checks all the possible neighbors and connections only during
+ the first run of the map.
+ The idea being to use dynamic programming to avoid the repetition of expanding
+ nodes that are already known, thus having a faster solution.
+ In other words, the generated mesh helps to reduce the work because it
+ removes the need for checking each pixel of the map.
  
 \end_layout
 
@@ -742,11 +737,11 @@ Bellman Ford Implicit (BFI)
 \end_layout
 
 \begin_layout Standard
-This Algorithm uses a closed/open logic, to explored the nodes, it is quite
- similar to A*.
- The difference is that this method doesn't has an heuristic, we just only
- used ecludian distance to choose de shortest path.
- It is a dymanic programing solution, it cuts when the goal is reached.
+This algorithm uses a close/open logic to explore the nodes in a similar
+ fashion to A*.
+ The difference being that this method does not use an heuristic, it only
+ makes use of the euclidean distance to choose the shortest path.
+ It is a dymanic programing solution that cuts when the goal is reached.
  
 \end_layout
 
@@ -792,11 +787,16 @@ Conclusion
 \end_layout
 
 \begin_layout Standard
-Both methods were fast in proportion with user expirience.
- There were not so delay, and the game was totaly functional.
- In this first stage of the project we had to deal with pysc2.
- So there was also some time invested in this task.
- The main idea was to familiriazed with the framework.
+Both methods were fast enough to keep up a good user expirience.
+ There was almost no delay perceived and the game was completely functional.
+ 
+\end_layout
+
+\begin_layout Standard
+In this first stage of the project our team had to deal with dipping our
+ toes in PySC2, so there was some time invested in this task besides the
+ implementation of the algorithms.
+ The main idea was to get familiarized with the framework.
  
 \end_layout
 
