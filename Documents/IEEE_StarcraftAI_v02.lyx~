@@ -737,9 +737,9 @@ Bellman Ford Implicit (BFI)
 \end_layout
 
 \begin_layout Standard
-This algorithm uses a close/open logic to explore the nodes quite similar
- to A*.
- The difference being that this method doesn't uses an heuristic, it only
+This algorithm uses a close/open logic to explore the nodes in a similar
+ fashion to A*.
+ The difference being that this method does not use an heuristic, it only
  makes use of the euclidean distance to choose the shortest path.
  It is a dymanic programing solution that cuts when the goal is reached.
  
@@ -787,15 +787,15 @@ Conclusion
 \end_layout
 
 \begin_layout Standard
-Both methods were fast enough to keep up showing a good user expirience.
+Both methods were fast enough to keep up a good user expirience.
  There was almost no delay perceived and the game was completely functional.
  
 \end_layout
 
 \begin_layout Standard
-In this first stage of the project our team had to deal with getting our
- toes dipped with PySC2, so there was some time invested in this task besides
- the implementation of the algorithms.
+In this first stage of the project our team had to deal with dipping our
+ toes in PySC2, so there was some time invested in this task besides the
+ implementation of the algorithms.
  The main idea was to get familiarized with the framework.
  
 \end_layout
@@ -879,12 +879,19 @@ Brush
 \end_layout
 
 \begin_layout Standard
-It generates a squared matrix with a Gaussian distribution.
- We call the output as heightmap.
- The idea of the heightmap is to generate deep used in the HillClimbing
- algorithms, as a point on the new mapping is higher, the density of minerals
- grows too.
- 
+The brush is a squared matrix generated with a Gaussian distribution, the
+ output is called a 
+\begin_inset Quotes eld
+\end_inset
+
+heightmap
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The idea of the heightmap is to simulate a 3d plane with depth to be used
+ by HillClimbing algorithms, where the higher the point on the map is proportion
+ally direct to a higher density of minerals in that area.
 \end_layout
 
 \begin_layout Itemize
@@ -892,17 +899,13 @@ Map - Matrix with the size of our game screen (initialized with 0s)
 \end_layout
 
 \begin_layout Itemize
-We can stamp out our brush 
+We can stamp out the brush in the map (it adds the values of our brush over
+ a coord in the matarix)
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
-Add the values of our brush over a coord in Map 
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-If we stamp several times we get our map with concentration point
+If we stamp several times, then we get concentrations points in our map
+ to visualize the density of minerals
 \end_layout
 
 \begin_layout Standard
@@ -957,10 +960,10 @@ A*
 \end_layout
 
 \begin_layout Standard
-This version of A* try to find a next first maximum local only using a heuristic
- based in the value of coordinates of the mesh.
- The real problem is that needs a lot of calculus when the map is almost
- empty, because there are a lot of “plain ground” and that make difficult
+This version of the A* tries to find a next first-maximum-local by only
+ using an heuristic that is based on the values of the mesh coordinates.
+ The real problem is that it needs a lot of calculus when the map is almost
+ empty because there is a lot of “flat ground” and that makes it difficult
  to find the maximum.
  
 \end_layout
@@ -977,7 +980,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Upper view of heights used in A* 
+Upper view of the heights used in A* 
 \end_layout
 
 \end_inset
@@ -1007,18 +1010,17 @@ HillClimbing and Simulated Annealing
 \end_layout
 
 \begin_layout Standard
-Using the height map, we could procced to find a max height point, as a
- best option to gather minerals.
- This is hill climbing algorithm, however a problem is that we could get
- stuck in a local maxima, so our strategy is to implement a chance given
- by a probability distribution, in this case we use a temperature boltzmann
- distribution 
+Using the height map, a max-height-point (best option to gather minerals)
+ can be found.
+ This is a Hill Climbing algorithm that could get stuck in a local maxima,
+ so the strategy is to implement a chance given by a probability distribution.
+ In this case the temperature of the boltzmann distribution 
 \begin_inset Formula $e^{\text{\frac{\text{∆}E}{T}}}>rand(0,1)$
 \end_inset
 
- .
- The temperature will decrease by an alpha factor inside a loop.
- For tuning the alpha we did the following equations.
+ is used.
+ The temperature decreases by an alpha factor inside a loop.
+ The following equations were made for tunning the alpha factor.
  
 \begin_inset Formula $T_{0}=inital\thinspace temperature$
 \end_inset
@@ -1055,8 +1057,8 @@ Using the height map, we could procced to find a max height point, as a
 \end_layout
 
 \begin_layout Standard
-As shown below there is an application of the simulated annealing, the chance
- part is designed with the equation above.
+An application of the simulated annealing is shown below.
+ The chance section is designed with the equation shown above.
  
 \end_layout
 
@@ -1202,12 +1204,14 @@ Conclusion
 \end_layout
 
 \begin_layout Standard
-In this stage it was found that Hill climibing was faster than A*, this
- could be because the height brush, was helpful to reduce the iterations
- in the search, get the local optimal point was cheaper than comparing all
- nodes like A*, maybe A* is more acurate but the trade off is the time perfomanc
-e.
-  
+In this stage of the project it was found that the Hill climibing was faster
+ than the A*.
+ This could be because the height brush was helpful to reduce the iterations
+ of the search, and getting the local optimal point was cheaper than comparing
+ all nodes like in the A*.
+ Maybe the A* is more accurate but the trade off is noticable in the time
+ perfomance.
+ 
 \end_layout
 
 \begin_layout Standard
