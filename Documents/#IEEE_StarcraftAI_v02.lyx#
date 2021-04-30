@@ -3091,18 +3091,18 @@ Conclusions
 \end_layout
 
 \begin_layout Standard
-There were two general approches following the implementation of the Reinforceme
-nt Learning algorithm in pytorch: 
+There were two general training approaches following the implementation
+ of the Reinforcement Learning algorithm in pytorch: 
 \end_layout
 
 \begin_layout Itemize
-An agent capable of learning was generated to be able to compete against
+An agent was generated with the ability to learn how to compete against
  a random-agent (an agent that randomly selects what to do from a more limited
  range of actions).
 \end_layout
 
 \begin_layout Itemize
-Then the agent was put to the test against the StarCraft’s AI in easy mode.
+The agent was then put to the test against StarCraft’s AI in easy mode.
  
 \end_layout
 
@@ -3112,10 +3112,10 @@ There were several factors and points that can be concluded from what was
 \end_layout
 
 \begin_layout Itemize
-The full decision tree with all the posible actions would be needed to be
- able to beat the AI from the game.
- In this project the actions were limited exclusively to some of ones of
- the Terran race.
+The full decision tree with all the possible actions would be needed for
+ the agent to be able to beat the AI from the game.
+ In this project the actions were limited to some of those of the Terran
+ race.
  
 \end_layout
 
@@ -3126,23 +3126,24 @@ The more actions available, the slower the decision making is, thus lowering
 \end_layout
 
 \begin_layout Itemize
-When the list of actions is expanded, the quantity of posible strategies
- grows in an exponential way.
+When the list of actions is expanded, the quantity of possible strategies
+ grows exponentially.
  
 \end_layout
 
 \begin_layout Itemize
-The episodes tend to be longer when the agent makes good decisions, and
- by consecuence taking longer to train.
+The match tends to last longer when the agent makes good decisions and by
+ consequence the training also takes more time.
  
 \end_layout
 
 \begin_layout Standard
-The training time is an important factor, because sometimes it is impossible
+The training time is an important factor because sometimes it is impossible
  to recognize if our agent is learning as expected until several hundred
  episodes have been played.
- This means that we need to be careful with the time consumed by this considerin
-g that we have limited time and resources to develop this project.
+ This means that we need to take into consideration the amount of time consumed
+ by the training, considering that we have limited time and resources to
+ develop this project.
 \end_layout
 
 \begin_layout Section*

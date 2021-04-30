@@ -2384,7 +2384,7 @@ Additional Notes
 
 \begin_layout Itemize
 \noindent
-We manually activated fog of war And visualize features
+We manually activated fog of war and visualize features
 \end_layout
 
 \begin_layout Subsection
@@ -2755,7 +2755,7 @@ Generic Class implementation
 \end_layout
 
 \begin_layout Subsection
-Against random agent
+Against Random agent
 \end_layout
 
 \begin_layout Standard
@@ -3091,20 +3091,59 @@ Conclusions
 \end_layout
 
 \begin_layout Standard
-...
+There were two general training approaches following the implementation
+ of the Reinforcement Learning algorithm in pytorch: 
 \end_layout
 
-\begin_layout Appendices
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Don't add text here!
+\begin_layout Itemize
+An agent was generated with the ability to learn how to compete against
+ a random-agent (an agent that randomly selects what to do from a more limited
+ range of actions).
 \end_layout
 
-\end_inset
+\begin_layout Itemize
+The agent was then put to the test against StarCraft’s AI in easy mode.
+ 
+\end_layout
 
+\begin_layout Standard
+There were several factors and points that can be concluded from what was
+ done in this project: 
+\end_layout
 
+\begin_layout Itemize
+The full decision tree with all the possible actions would be needed for
+ the agent to be able to beat the AI from the game.
+ In this project the actions were limited to some of those of the Terran
+ race.
+ 
+\end_layout
+
+\begin_layout Itemize
+The more actions available, the slower the decision making is, thus lowering
+ the efficiency of the agent.
+ 
+\end_layout
+
+\begin_layout Itemize
+When the list of actions is expanded, the quantity of possible strategies
+ grows exponentially.
+ 
+\end_layout
+
+\begin_layout Itemize
+The match tends to last longer when the agent makes good decisions and by
+ consequence the training also takes more time.
+ 
+\end_layout
+
+\begin_layout Standard
+The training time is an important factor because sometimes it is impossible
+ to recognize if our agent is learning as expected until several hundred
+ episodes have been played.
+ This means that we need to take into consideration the amount of time consumed
+ by the training, as we have limited time and resources to develop this
+ project.
 \end_layout
 
 \begin_layout Section*
@@ -3121,20 +3160,6 @@ nt of this project.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Remember though that your final submission is supposed to have all the bibliogra
-phy entries embedded in the \SpecialChar LaTeX
--file.
- This means you eventually have to copy the .bbl file into the latex file
- and remove the bibtex lines.
-\end_layout
-
-\end_inset
-
-
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 btprint "btPrintCited"
