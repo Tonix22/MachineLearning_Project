@@ -4,13 +4,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
+class LinearDeepQNetwork(nn.Module):
+    def __init__(self, lr, n_actions, input_dims):
+        super(LinearDeepQNetwork,self).__init__()
 
-class XORNET(nn.Module):
-    def __init__(self, lr, n_actions):
-        super(XORNET,self).__init__()
-
-        self.fc1 = nn.Linear(2, 2)
-        self.fc2 = nn.Linear(2, 1)
+        self.fc1 = nn.Linear(input_dims, 64)
+        self.fc2 = nn.Linear(64, n_actions)
 
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
         self.loss   = nn.MSELoss()
@@ -19,25 +18,32 @@ class XORNET(nn.Module):
         self.to(self.device)
 
     def forward(self,state):
-        layer1  = T.Sigmoid(self.fc1(state))
+        layer1  = F.relu(self.fc1(state))
         actions = self.fc2(layer1)
+
         return actions
 
 class nnq():
-    def __init__(self, n_actions, lr, gamma=0.80, epsilon=.1, eps_dec=1e-5, eps_min=0.01):
+    def __init__(self, input_dims, n_actions, lr, gamma=0.80, epsilon=.1, eps_dec=1e-5, eps_min=0.01):
         self.lr=lr
+        self.input_dims = input_dims
         self.n_actions = n_actions
         self.gamma   = gamma
         self.epsilon = epsilon
         self.eps_dec = eps_dec
         self.eps_min = eps_min
         self.action_space = [i for i in range(self.n_actions)]
-        self.Q = XORNET(self.lr,self.n_actions)
+        self.Q = LinearDeepQNetwork(self.lr,self.n_actions,self.input_dims)
 
     def choose_action(self, observations):   
         if np.random.rand() > self.epsilon:
             state   = T.tensor(observations, dtype=T.float).to(self.Q.device) 
-            action = self.Q.forward(state)
+            actions = self.Q.forward(state)
+            #print("CHOSE*******")
+            #print(actions)
+            action  = T.argmax(actions).item()
+            #print(action)
+            #print("*****")
         else:
             action = np.random.choice(self.action_space)
         return action
